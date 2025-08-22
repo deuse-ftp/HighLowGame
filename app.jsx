@@ -213,7 +213,7 @@ const publicClient = createPublicClient({
   transport: http(),
 });
 const DEV_ADDRESS = '0x8a6BFa87D9e7053728076B2C84cC0acd829A2958';
-const BACKEND_URL = 'hi-lo-39h3.vercel.app';
+const BACKEND_URL = '/api';
 // WalletPanel component
 const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet }) => {
   const [showBalance, setShowBalance] = useState(false);
