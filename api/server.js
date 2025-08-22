@@ -505,4 +505,9 @@ app.post('/fund-wallet', async (req, res) => {
   }
 });
 
+// Test endpoint to confirm backend is running
+app.get('/api/test', (req, res) => {
+  res.json({ status: 'Backend is running!' });
+});
+
 module.exports = app;
