@@ -17,6 +17,14 @@
       "dest": "/api/server.js"
     },
     {
+      "src": "/assets/(.*)",
+      "dest": "/dist/assets/$1"
+    },
+    {
+      "src": "/cards/(.*)",
+      "dest": "/cards/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
