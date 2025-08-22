@@ -1,0 +1,33 @@
+{
+  "name": "hilo",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@privy-io/js-sdk-core": "^0.53.2",
+    "@privy-io/react-auth": "^2.21.1",
+    "@reown/appkit": "^1.7.18",
+    "@reown/appkit-core": "^1.7.18",
+    "@reown/appkit-scaffold-ui": "^1.7.18",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-draggable": "^4.5.0",
+    "viem": "^2.34.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "buffer": "^6.0.3",
+    "vite": "^7.1.1"
+  },
+  "main": "server.js"
+}
