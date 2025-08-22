@@ -5,6 +5,7 @@ const { encodeFunctionData, parseEther, isAddress, createPublicClient, http, for
 const { createWalletClient } = require('viem');
 const { privateKeyToAccount } = require('viem/accounts');
 const { defineChain } = require('viem');
+
 // Define the Monad Testnet chain
 const monadTestnet = defineChain({
   id: 10143,
@@ -20,8 +21,10 @@ const monadTestnet = defineChain({
     public: { http: ['https://testnet-rpc.monad.xyz'] },
   },
 });
+
 // Contract address
 const contractAddress = '0xF7b67485890eC691c69b229449F11eEf167249a8';
+
 // ABI for HiLoGameMonadID contract
 const contractABI = [
   {
@@ -204,6 +207,7 @@ const contractABI = [
     "type": "function"
   }
 ];
+
 // ABI for ILeaderboard contract
 const leaderboardABI = [
   {
@@ -218,13 +222,16 @@ const leaderboardABI = [
     "type": "function"
   }
 ];
+
 // Private key for DEV_ADDRESS
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
+
 // Validate private key
 if (!PRIVATE_KEY || !PRIVATE_KEY.startsWith('0x') || PRIVATE_KEY.length !== 66) {
   console.error('❌ Error: Private key must be a 64-character hexadecimal string starting with 0x');
   process.exit(1);
 }
+
 let walletClient;
 try {
   walletClient = createWalletClient({
@@ -236,22 +243,27 @@ try {
   console.error('❌ Error creating walletClient:', error.message);
   process.exit(1);
 }
+
 const publicClient = createPublicClient({
   chain: monadTestnet,
   transport: http(),
 });
+
 const app = express();
+
 // Configure CORS to allow requests from frontend
 app.use(cors({
-  origin: 'hi-lo-39h3.vercel.app',
+  origin: '*',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
 app.use(express.json());
+
 // Transaction queue
 let transactionQueue = [];
 let isProcessing = false;
 let lastUsedNonce = null; // Cache for last used nonce
+
 // Function to process the transaction queue
 const processQueue = async () => {
   if (isProcessing || transactionQueue.length === 0) {
@@ -320,6 +332,7 @@ const processQueue = async () => {
     }
   }
 };
+
 // Endpoint to check if DEV_ADDRESS is the contract owner
 app.get('/check-owner', async (req, res) => {
   try {
@@ -336,6 +349,7 @@ app.get('/check-owner', async (req, res) => {
     res.status(500).json({ error: 'Failed to check owner: ' + error.message });
   }
 });
+
 // Endpoint for gameAction
 app.post('/game-action', async (req, res) => {
   const { player } = req.body;
@@ -387,6 +401,7 @@ app.post('/game-action', async (req, res) => {
     res.status(500).json({ error: 'Failed to process gameAction: ' + error.message });
   }
 });
+
 // Endpoint for recordPrize
 app.post('/record-prize', async (req, res) => {
   const { player, prize, username } = req.body;
@@ -438,6 +453,7 @@ app.post('/record-prize', async (req, res) => {
     res.status(500).json({ error: 'Failed to process recordPrize: ' + error.message });
   }
 });
+
 // Endpoint for fundWallet
 app.post('/fund-wallet', async (req, res) => {
   const { to, amount } = req.body;
@@ -488,7 +504,5 @@ app.post('/fund-wallet', async (req, res) => {
     res.status(500).json({ error: 'Failed to send transaction: ' + error.message });
   }
 });
-// Start the server on port 3000
-app.listen(3000, () => {
-  console.log('✅ Backend running on port 3000. DEV_ADDRESS is paying gas for all users.');
-});
+
+module.exports = app;
