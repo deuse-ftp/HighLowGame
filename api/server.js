@@ -243,7 +243,7 @@ const publicClient = createPublicClient({
 const app = express();
 // Configure CORS to allow requests from frontend
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'hi-lo-39h3.vercel.app',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
 }));
