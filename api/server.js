@@ -226,22 +226,20 @@ const leaderboardABI = [
 // Private key for DEV_ADDRESS
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-// Validate private key
-if (!PRIVATE_KEY || !PRIVATE_KEY.startsWith('0x') || PRIVATE_KEY.length !== 66) {
-  console.error('❌ Error: Private key must be a 64-character hexadecimal string starting with 0x');
-  process.exit(1);
-}
-
+// Validate private key (não exit mais, só loga erro)
 let walletClient;
-try {
-  walletClient = createWalletClient({
-    account: privateKeyToAccount(PRIVATE_KEY),
-    chain: monadTestnet,
-    transport: http(),
-  });
-} catch (error) {
-  console.error('❌ Error creating walletClient:', error.message);
-  process.exit(1);
+if (!PRIVATE_KEY || !PRIVATE_KEY.startsWith('0x') || PRIVATE_KEY.length !== 66) {
+  console.error('⚠️ Warning: Private key inválida ou ausente. Transações falharão, mas server continua.');
+} else {
+  try {
+    walletClient = createWalletClient({
+      account: privateKeyToAccount(PRIVATE_KEY),
+      chain: monadTestnet,
+      transport: http(),
+    });
+  } catch (error) {
+    console.error('❌ Error creating walletClient:', error.message);
+  }
 }
 
 const publicClient = createPublicClient({
@@ -254,7 +252,7 @@ const app = express();
 // Configure CORS to allow requests from frontend
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
 }));
 app.use(express.json());
@@ -334,7 +332,7 @@ const processQueue = async () => {
 };
 
 // Endpoint to check if DEV_ADDRESS is the contract owner
-app.get('/check-owner', async (req, res) => {
+app.get('/api/check-owner', async (req, res) => {
   try {
     const owner = await publicClient.readContract({
       address: contractAddress,
@@ -351,7 +349,7 @@ app.get('/check-owner', async (req, res) => {
 });
 
 // Endpoint for gameAction
-app.post('/game-action', async (req, res) => {
+app.post('/api/game-action', async (req, res) => {
   const { player } = req.body;
   if (!player || !isAddress(player)) {
     console.error('❌ Invalid player address:', player);
@@ -389,7 +387,7 @@ app.post('/game-action', async (req, res) => {
     // Add to transaction queue
     return new Promise((resolve, reject) => {
       transactionQueue.push({
-        endpoint: '/game-action',
+        endpoint: '/api/game-action',
         data,
         resolve: (result) => res.json(result),
         reject: (error) => res.status(500).json(error),
@@ -403,7 +401,7 @@ app.post('/game-action', async (req, res) => {
 });
 
 // Endpoint for recordPrize
-app.post('/record-prize', async (req, res) => {
+app.post('/api/record-prize', async (req, res) => {
   const { player, prize, username } = req.body;
   if (!player || !isAddress(player) || !prize || typeof username !== 'string') {
     console.error('❌ Invalid parameters:', { player, prize, username });
@@ -441,7 +439,7 @@ app.post('/record-prize', async (req, res) => {
     // Add to transaction queue
     return new Promise((resolve, reject) => {
       transactionQueue.push({
-        endpoint: '/record-prize',
+        endpoint: '/api/record-prize',
         data,
         resolve: (result) => res.json(result),
         reject: (error) => res.status(500).json(error),
@@ -455,7 +453,7 @@ app.post('/record-prize', async (req, res) => {
 });
 
 // Endpoint for fundWallet
-app.post('/fund-wallet', async (req, res) => {
+app.post('/api/fund-wallet', async (req, res) => {
   const { to, amount } = req.body;
   if (!to || !isAddress(to) || !amount) {
     console.error('❌ Invalid parameters:', { to, amount });
@@ -477,12 +475,12 @@ app.post('/fund-wallet', async (req, res) => {
     });
     const nonce = lastUsedNonce !== null ? Math.max(networkNonce, lastUsedNonce + 1) : networkNonce;
     console.log(`ℹ️ Using nonce: ${nonce}`);
-   
+  
     // Get gas price and increase for priority
     let gasPrice = await publicClient.getGasPrice();
     gasPrice = BigInt(Math.floor(Number(gasPrice) * 1.2)); // Increase by 20% for priority
     console.log(`ℹ️ Adjusted gas price: ${formatEther(gasPrice)} MON`);
-   
+  
     const hash = await walletClient.sendTransaction({
       to,
       value: parseEther(amount),
@@ -490,14 +488,14 @@ app.post('/fund-wallet', async (req, res) => {
       nonce,
     });
     console.log(`✅ Transaction sent successfully: ${hash}`);
-   
+  
     // Wait for transaction confirmation
     const receipt = await publicClient.waitForTransactionReceipt({ hash });
     console.log(`✅ Transaction confirmed, receipt:`, receipt.status);
-   
+  
     // Update last used nonce
     lastUsedNonce = nonce;
-   
+  
     res.json({ success: true, hash });
   } catch (error) {
     console.error('❌ Failed to send fundWallet transaction:', error.message);
@@ -508,6 +506,11 @@ app.post('/fund-wallet', async (req, res) => {
 // Test endpoint to confirm backend is running
 app.get('/api/test', (req, res) => {
   res.json({ status: 'Backend is running!' });
+});
+
+// Custom 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Endpoint not found' });
 });
 
 module.exports = app;
