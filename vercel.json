@@ -1,35 +1,26 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/server.js",
-      "methods": ["GET", "POST"]
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/dist/assets/$1"
-    },
-    {
-      "src": "/cards/(.*)",
-      "dest": "/cards/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ]
+"version": 2,
+"functions": {
+"api/server.js": {
+"runtime": "@vercel/node@latest"
+}
+},
+"rewrites": [
+{
+"source": "/api/(.)",
+"destination": "/api/server.js"
+},
+{
+"source": "/(.)",
+"destination": "/index.html"
+}
+],
+"headers": [
+{
+"source": "/api/(.*)",
+"headers": [
+{ "key": "Content-Type", "value": "application/json" }
+]
+}
+]
 }
