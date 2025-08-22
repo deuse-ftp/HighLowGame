@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client';
 import { PrivyProvider, useLogin, usePrivy, useWallets, useCrossAppAccounts } from '@privy-io/react-auth';
 import { defineChain, createPublicClient, http } from 'viem';
 import Draggable from 'react-draggable';
+
 // Define the Monad Testnet chain
 const monadTestnet = defineChain({
   id: 10143,
@@ -24,8 +25,10 @@ const monadTestnet = defineChain({
     default: { name: 'Monad Explorer', url: 'https://testnet.monadexplorer.com' },
   },
 });
+
 // Contract address
 const contractAddress = '0xF7b67485890eC691c69b229449F11eEf167249a8';
+
 // ABI for HiLoGameMonadID contract
 const contractABI = [
   {
@@ -208,12 +211,15 @@ const contractABI = [
     "type": "function"
   }
 ];
+
 const publicClient = createPublicClient({
   chain: monadTestnet,
   transport: http(),
 });
+
 const DEV_ADDRESS = '0x8a6BFa87D9e7053728076B2C84cC0acd829A2958';
 const BACKEND_URL = '/api';
+
 // WalletPanel component
 const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet }) => {
   const [showBalance, setShowBalance] = useState(false);
@@ -317,6 +323,7 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
     </div>
   );
 };
+
 // PrivyConnect component
 const PrivyConnect = () => {
   const { login } = useLogin({
@@ -346,6 +353,7 @@ const PrivyConnect = () => {
   const [usernamesMap, setUsernamesMap] = useState(new Map());
   const [lastLeaderboardUpdate, setLastLeaderboardUpdate] = useState(0);
   const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
+
   // Debounce function to limit event handling
   const debounce = (func, wait) => {
     let timeout;
@@ -354,6 +362,7 @@ const PrivyConnect = () => {
       timeout = setTimeout(() => func(...args), wait);
     };
   };
+
   useEffect(() => {
     console.log('ℹ️ Privy ready status:', ready);
     if (!ready) {
@@ -430,6 +439,7 @@ const PrivyConnect = () => {
       unsubscribeReset();
     };
   }, [ready, authenticated, user]);
+
   useEffect(() => {
     const fetchBalance = async () => {
       if (monadWalletAddress) {
@@ -446,6 +456,7 @@ const PrivyConnect = () => {
     const balanceInterval = setInterval(fetchBalance, 10000);
     return () => clearInterval(balanceInterval);
   }, [monadWalletAddress]);
+
   const checkOwner = async () => {
     try {
       const owner = await publicClient.readContract({
@@ -460,6 +471,7 @@ const PrivyConnect = () => {
       console.error('❌ Failed to check owner:', error);
     }
   };
+
   const fundWallet = async () => {
     if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
       console.error('❌ Invalid wallet address:', monadWalletAddress);
@@ -486,6 +498,7 @@ const PrivyConnect = () => {
       console.error('❌ Failed to fund wallet:', error);
     }
   };
+
   const fetchUsername = async (walletAddress) => {
     if (!walletAddress) {
       console.warn('❌ No wallet address provided for fetchUsername');
@@ -523,6 +536,7 @@ const PrivyConnect = () => {
       setLoadingUsername(false);
     }
   };
+
   const fetchLeaderboardAndRank = async (forceUpdate = false) => {
     let leaderboardData = [];
     try {
@@ -585,7 +599,6 @@ const PrivyConnect = () => {
           localStorage.setItem('cachedPlayerRank', JSON.stringify(updatedPlayerRank));
         } catch (error) {
           console.error('❌ Failed to fetch player rank for', monadWalletAddress, ':', error);
-          // Do not overwrite playerRank with default values; keep existing or use leaderboard data
           const playerEntry = leaderboardData.find(entry => entry.player.toLowerCase() === monadWalletAddress.toLowerCase());
           if (playerEntry) {
             updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score) };
@@ -613,12 +626,14 @@ const PrivyConnect = () => {
       }
     }
   };
+
   useEffect(() => {
     if (ready) {
       console.log('ℹ️ Initializing leaderboard fetch');
       fetchLeaderboardAndRank();
     }
   }, [ready]);
+
   useEffect(() => {
     let transactionQueue = [];
     let isProcessing = false;
@@ -696,21 +711,30 @@ const PrivyConnect = () => {
         return;
       }
       try {
-        console.log('ℹ️ Sending request to game-action endpoint');
+        console.log('ℹ️ Sending request to game-action endpoint:', `https://hi-lo-39h3.vercel.app/api/game-action`);
         const response = await fetch(`${BACKEND_URL}/game-action`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
           },
           body: JSON.stringify({ player: monadWalletAddress }),
         });
-        if (response.ok) {
-          const data = await response.json();
-          console.log('✅ Game action transaction sent successfully:', data.hash);
-        } else {
-          const errorData = await response.json();
-          console.error('❌ Failed to call backend, status:', response.status, 'message:', errorData.error);
+        const contentType = response.headers.get('content-type');
+        console.log('ℹ️ Response status:', response.status, 'Content-Type:', contentType);
+        const text = await response.text();
+        console.log('ℹ️ Raw response:', text);
+        if (!response.ok) {
+          console.error('❌ Failed to call backend, status:', response.status, 'response:', text);
+          return;
         }
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('❌ Response is not JSON:', contentType, 'response:', text);
+          return;
+        }
+        const data = JSON.parse(text);
+        console.log('✅ Game action transaction sent successfully:', data.hash);
+        return data;
       } catch (error) {
         console.error('❌ Failed to process game action:', error);
       }
@@ -745,6 +769,7 @@ const PrivyConnect = () => {
       window.removeEventListener('prizeAwarded', handlePrizeAwarded);
     };
   }, [authenticated, monadWalletAddress, username]);
+
   const buttonStyle = {
     width: '120px',
     padding: '10px 10px',
@@ -870,6 +895,7 @@ const PrivyConnect = () => {
     </Draggable>
   );
 };
+
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
   try {
