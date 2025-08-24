@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom/client';
 import { PrivyProvider, useLogin, usePrivy, useWallets, useCrossAppAccounts } from '@privy-io/react-auth';
 import { defineChain, createPublicClient, http } from 'viem';
 import Draggable from 'react-draggable';
-
 // Define the Monad Testnet chain
 const monadTestnet = defineChain({
   id: 10143,
@@ -25,10 +24,8 @@ const monadTestnet = defineChain({
     default: { name: 'Monad Explorer', url: 'https://testnet.monadexplorer.com' },
   },
 });
-
 // Contract address
 const contractAddress = '0x04860C366B7DB25C087eE170b75d38CC4d50200D';
-
 // ABI for HiLoGameMonadID contract
 const contractABI = [
   {
@@ -211,15 +208,12 @@ const contractABI = [
     "type": "function"
   }
 ];
-
 const publicClient = createPublicClient({
   chain: monadTestnet,
   transport: http(),
 });
-
 const DEV_ADDRESS = '0x8a6BFa87D9e7053728076B2C84cC0acd829A2958';
 const BACKEND_URL = '/api';
-
 // WalletPanel component
 const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet }) => {
   const [showBalance, setShowBalance] = useState(false);
@@ -323,7 +317,6 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
     </div>
   );
 };
-
 // PrivyConnect component
 const PrivyConnect = () => {
   const { login } = useLogin({
@@ -353,7 +346,6 @@ const PrivyConnect = () => {
   const [usernamesMap, setUsernamesMap] = useState(new Map());
   const [lastLeaderboardUpdate, setLastLeaderboardUpdate] = useState(0);
   const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
-
   // Debounce function to limit event handling
   const debounce = (func, wait) => {
     let timeout;
@@ -362,7 +354,6 @@ const PrivyConnect = () => {
       timeout = setTimeout(() => func(...args), wait);
     };
   };
-
   useEffect(() => {
     console.log('ℹ️ Privy ready status:', ready);
     if (!ready) {
@@ -439,7 +430,6 @@ const PrivyConnect = () => {
       unsubscribeReset();
     };
   }, [ready, authenticated, user]);
-
   useEffect(() => {
     const fetchBalance = async () => {
       if (monadWalletAddress) {
@@ -456,7 +446,6 @@ const PrivyConnect = () => {
     const balanceInterval = setInterval(fetchBalance, 10000);
     return () => clearInterval(balanceInterval);
   }, [monadWalletAddress]);
-
   const checkOwner = async () => {
     try {
       const owner = await publicClient.readContract({
@@ -471,7 +460,6 @@ const PrivyConnect = () => {
       console.error('❌ Failed to check owner:', error);
     }
   };
-
   const fundWallet = async () => {
     if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
       console.error('❌ Invalid wallet address:', monadWalletAddress);
@@ -498,7 +486,6 @@ const PrivyConnect = () => {
       console.error('❌ Failed to fund wallet:', error);
     }
   };
-
   const fetchUsername = async (walletAddress) => {
     if (!walletAddress) {
       console.warn('❌ No wallet address provided for fetchUsername');
@@ -536,7 +523,6 @@ const PrivyConnect = () => {
       setLoadingUsername(false);
     }
   };
-
   const fetchLeaderboardAndRank = async (forceUpdate = false) => {
     let leaderboardData = [];
     try {
@@ -626,14 +612,12 @@ const PrivyConnect = () => {
       }
     }
   };
-
   useEffect(() => {
     if (ready) {
       console.log('ℹ️ Inicializando obtenção do leaderboard');
       fetchLeaderboardAndRank();
     }
   }, [ready]);
-
   useEffect(() => {
     let transactionQueue = [];
     let isProcessing = false;
@@ -653,7 +637,7 @@ const PrivyConnect = () => {
         console.error('❌ Endereço de carteira inválido:', monadWalletAddress);
         return;
       }
-      const adjustedPrize = prize; // Envia o prêmio completo
+      const adjustedPrize = Math.floor(prize / 2); // Divide o prêmio por 2 para o Monad Games ID
       console.log('ℹ️ Prêmio ajustado:', adjustedPrize);
       transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
       if (!isProcessing) {
@@ -767,7 +751,6 @@ const PrivyConnect = () => {
       window.removeEventListener('prizeAwarded', handlePrizeAwarded);
     };
   }, [authenticated, monadWalletAddress, username]);
-
   const buttonStyle = {
     width: '120px',
     padding: '10px 10px',
@@ -853,7 +836,6 @@ const PrivyConnect = () => {
     margin: '0 0 10px 0',
     textAlign: 'center',
   };
-
   return (
     <Draggable handle=".drag-handle">
       <div style={panelStyle}>
@@ -894,7 +876,6 @@ const PrivyConnect = () => {
     </Draggable>
   );
 };
-
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
   try {
