@@ -7,24 +7,43 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     console.log('Initializing drag for log-container...');
-    if (window.innerWidth > 600) {
-        logContainer.style.position = 'absolute';
-        const hiloContainer = document.getElementById('hilo-container');
-        const hiloRect = hiloContainer.getBoundingClientRect();
-        currentX = parseFloat(logContainer.style.left) || (hiloRect.left - 290);
-        currentY = parseFloat(logContainer.style.top) || 202;
-        logContainer.style.left = `${currentX}px`;
-        logContainer.style.top = `${currentY}px`;
-    } else {
-        logContainer.style.position = 'relative';
-        currentX = 0;
-        currentY = 0;
-        logContainer.style.left = 'auto';
-        logContainer.style.top = 'auto';
-        logContainer.style.bottom = 'auto';
-        logContainer.style.margin = '20px auto';
+
+    // Função para inicializar a posição do log-container
+    function initializeLogContainerPosition() {
+        if (window.innerWidth > 600) {
+            logContainer.style.position = 'absolute';
+            logContainer.style.right = '20px'; // Corresponde ao CSS
+            logContainer.style.top = '20px';
+            logContainer.style.margin = '0';
+            currentX = parseFloat(logContainer.style.right) || 20;
+            currentY = parseFloat(logContainer.style.top) || 20;
+        } else {
+            logContainer.style.position = 'relative';
+            logContainer.style.right = 'auto';
+            logContainer.style.top = 'auto';
+            logContainer.style.bottom = 'auto';
+            logContainer.style.margin = '20px auto';
+            currentX = 0;
+            currentY = 0;
+        }
+        console.log('Log container initialized at x:', currentX, 'y:', currentY);
     }
-    console.log('Log container initialized at x:', currentX, 'y:', currentY);
+
+    // Inicializar posição quando o game-content for exibido
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const gameContent = document.getElementById('game-content');
+    const playGameBtn = document.getElementById('play-game-btn');
+    playGameBtn.addEventListener('click', () => {
+        welcomeScreen.style.display = 'none';
+        gameContent.style.display = 'block';
+        initializeLogContainerPosition(); // Inicializa posição após exibir o jogo
+    });
+
+    // Inicializar posição se o game-content já estiver visível (caso a tela inicial seja desativada)
+    if (gameContent.style.display !== 'none') {
+        initializeLogContainerPosition();
+    }
+
     logContainer.addEventListener('mousedown', (e) => {
         if (e.target.closest('button')) return;
         console.log('Drag started on log-container');
@@ -42,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
+            logContainer.style.right = 'auto';
             logContainer.style.left = `${currentX}px`;
             logContainer.style.top = `${currentY}px`;
             logContainer.style.bottom = 'auto';
@@ -72,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const touch = e.touches[0];
             currentX = touch.clientX - initialX;
             currentY = touch.clientY - initialY;
+            logContainer.style.right = 'auto';
             logContainer.style.left = `${currentX}px`;
             logContainer.style.top = `${currentY}px`;
             logContainer.style.bottom = 'auto';
@@ -145,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     window.addEventListener('prizeConfirmed', (event) => {
         const prize = event.detail.prize;
-
         toggleTotalPointsMessage(true);
     });
 });
