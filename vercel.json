@@ -34,6 +34,14 @@
       "dest": "/cards/$1"
     },
     {
+      "src": "/game/(.*)",
+      "dest": "/game/$1"
+    },
+    {
+      "src": "/styles/(.*)",
+      "dest": "/styles/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
