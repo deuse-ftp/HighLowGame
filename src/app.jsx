@@ -637,11 +637,11 @@ const PrivyConnect = () => {
         console.error('❌ Endereço de carteira inválido:', monadWalletAddress);
         return;
       }
-      const adjustedPrize = prize; // Usa o prêmio completo
-      console.log('ℹ️ Prêmio ajustado:', adjustedPrize);
-      transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
+      const adjustedPrize = Math.floor(prize / 2); // Divide por 2 para corrigir dobração no Monad Games ID
+      console.log('ℹ️ Prêmio ajustado para Monad Games ID:', adjustedPrize);
       // Dispara evento para o jogo local com o prêmio completo
       window.dispatchEvent(new CustomEvent('localPrizeConfirmed', { detail: { prize } }));
+      transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
       if (!isProcessing) {
         console.log('ℹ️ Iniciando processamento da fila de transações...');
         processQueue();
