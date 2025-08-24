@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Draggable from 'react-draggable';
 import { useLogin, usePrivy, useWallets, useCrossAppAccounts } from '@privy-io/react-auth';
 import { isAddress, formatEther } from 'viem';
 import WalletPanel from './WalletPanel';
