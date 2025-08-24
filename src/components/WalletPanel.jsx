@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DEV_ADDRESS } from '../config';
 
 // WalletPanel component
 const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet }) => {
