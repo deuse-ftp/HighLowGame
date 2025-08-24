@@ -549,18 +549,18 @@ const PrivyConnect = () => {
     try {
       if (!forceUpdate && leaderboard.length > 0) {
         console.log('ℹ️ Usando leaderboard em cache:', leaderboard);
-        // Multiply scores by 2 for local leaderboard display
+        // Multiply scores by 2 for local leaderboard display, adjust for odd scores
         const adjustedLeaderboard = leaderboard.map(entry => ({
           ...entry,
-          score: Number(entry.score) * 2
+          score: (Number(entry.score) % 2 === 0) ? Number(entry.score) * 2 : Number(entry.score) * 2 - 1
         }));
         window.dispatchEvent(
           new CustomEvent('leaderboardUpdated', {
-            detail: { 
-              leaderboard: adjustedLeaderboard, 
-              playerRank: { 
-                ...playerRank, 
-                score: Number(playerRank.score) * 2 
+            detail: {
+              leaderboard: adjustedLeaderboard,
+              playerRank: {
+                ...playerRank,
+                score: (Number(playerRank.score) % 2 === 0) ? Number(playerRank.score) * 2 : Number(playerRank.score) * 2 - 1
               }
             },
           })
@@ -573,15 +573,18 @@ const PrivyConnect = () => {
             functionName: 'getPlayerRank',
             args: [monadWalletAddress],
           });
-          const updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 };
+          const updatedPlayerRank = {
+            rank: Number(rank),
+            score: (Number(score) % 2 === 0) ? Number(score) * 2 : Number(score) * 2 - 1
+          };
           console.log('✅ Rank do jogador obtido com sucesso:', updatedPlayerRank);
           setPlayerRank({ rank: Number(rank), score: Number(score) });
           localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
           window.dispatchEvent(
             new CustomEvent('leaderboardUpdated', {
-              detail: { 
-                leaderboard: adjustedLeaderboard, 
-                playerRank: updatedPlayerRank 
+              detail: {
+                leaderboard: adjustedLeaderboard,
+                playerRank: updatedPlayerRank
               },
             })
           );
@@ -601,7 +604,7 @@ const PrivyConnect = () => {
         return {
           player: entry.player,
           username: userName || 'Unknown',
-          score: Number(entry.score) * 2, // Multiply score by 2 for local display
+          score: (Number(entry.score) % 2 === 0) ? Number(entry.score) * 2 : Number(entry.score) * 2 - 1 // Adjust for odd scores
         };
       }));
       leaderboardData.sort((a, b) => b.score - a.score);
@@ -614,7 +617,10 @@ const PrivyConnect = () => {
             functionName: 'getPlayerRank',
             args: [monadWalletAddress],
           });
-          updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 }; // Multiply score by 2
+          updatedPlayerRank = {
+            rank: Number(rank),
+            score: (Number(score) % 2 === 0) ? Number(score) * 2 : Number(score) * 2 - 1 // Adjust for odd scores
+          };
           console.log('✅ Rank do jogador obtido com sucesso:', updatedPlayerRank);
           setPlayerRank({ rank: Number(rank), score: Number(score) });
           localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
@@ -622,7 +628,10 @@ const PrivyConnect = () => {
           console.error('❌ Falha ao obter rank do jogador para', monadWalletAddress, ':', error);
           const playerEntry = leaderboardData.find(entry => entry.player.toLowerCase() === monadWalletAddress.toLowerCase());
           if (playerEntry) {
-            updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score) };
+            updatedPlayerRank = {
+              rank: leaderboardData.indexOf(playerEntry) + 1,
+              score: Number(playerEntry.score)
+            };
             console.log('ℹ️ Usando dados do leaderboard para rank do jogador:', updatedPlayerRank);
             setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }); // Store original score
             localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }));
@@ -681,7 +690,11 @@ const PrivyConnect = () => {
         console.error('❌ Endereço de carteira inválido:', monadWalletAddress);
         return;
       }
-      const adjustedPrize = Math.floor(prize / 2); // Divide por 2 para Monad Games ID
+      let adjustedPrize = Math.floor(prize / 2); // Divide por 2 para Monad Games ID
+      if (prize % 2 !== 0) { // Se prize for ímpar, soma 1
+        adjustedPrize += 1;
+        console.log('ℹ️ Pontuação ímpar detectada, ajustando para:', adjustedPrize);
+      }
       console.log('ℹ️ Prêmio ajustado para Monad Games ID:', adjustedPrize);
       // Dispara evento para o jogo local com o prêmio completo
       window.dispatchEvent(new CustomEvent('localPrizeConfirmed', { detail: { prize } }));
