@@ -12,19 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeLogContainerPosition() {
         if (window.innerWidth > 600) {
             logContainer.style.position = 'absolute';
-            logContainer.style.right = '20px'; // Corresponde ao CSS
-            logContainer.style.top = '20px';
+            const hiloContainer = document.getElementById('hilo-container');
+            const hiloRect = hiloContainer.getBoundingClientRect();
+            currentX = parseFloat(logContainer.style.left) || (hiloRect.left - 290);
+            currentY = parseFloat(logContainer.style.top) || 202;
+            logContainer.style.left = `${currentX}px`;
+            logContainer.style.top = `${currentY}px`;
             logContainer.style.margin = '0';
-            currentX = parseFloat(logContainer.style.right) || 20;
-            currentY = parseFloat(logContainer.style.top) || 20;
         } else {
             logContainer.style.position = 'relative';
-            logContainer.style.right = 'auto';
+            currentX = 0;
+            currentY = 0;
+            logContainer.style.left = 'auto';
             logContainer.style.top = 'auto';
             logContainer.style.bottom = 'auto';
             logContainer.style.margin = '20px auto';
-            currentX = 0;
-            currentY = 0;
         }
         console.log('Log container initialized at x:', currentX, 'y:', currentY);
     }
@@ -61,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
-            logContainer.style.right = 'auto';
             logContainer.style.left = `${currentX}px`;
             logContainer.style.top = `${currentY}px`;
             logContainer.style.bottom = 'auto';
@@ -92,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const touch = e.touches[0];
             currentX = touch.clientX - initialX;
             currentY = touch.clientY - initialY;
-            logContainer.style.right = 'auto';
             logContainer.style.left = `${currentX}px`;
             logContainer.style.top = `${currentY}px`;
             logContainer.style.bottom = 'auto';
