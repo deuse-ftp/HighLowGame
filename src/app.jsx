@@ -127,7 +127,7 @@ const contractABI = [
     ],
     "name": "getPlayerUsername",
     "outputs": [
-      { "internalType": "string", "name": "", "type": "string" }
+      { "indexed": false, "internalType": "string", "name": "", "type": "string" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -353,11 +353,18 @@ const PrivyConnect = () => {
   const [usernamesMap, setUsernamesMap] = useState(new Map());
   const [lastLeaderboardUpdate, setLastLeaderboardUpdate] = useState(0);
   const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
+  const [lastTransactionTime, setLastTransactionTime] = useState(0);
 
-  // Debounce function to limit event handling
+  // Debounce function to limit transaction calls
   const debounce = (func, wait) => {
     let timeout;
     return (...args) => {
+      const now = Date.now();
+      if (now - lastTransactionTime < wait) {
+        console.log('ℹ️ Transaction throttled, waiting...');
+        return;
+      }
+      setLastTransactionTime(now);
       clearTimeout(timeout);
       timeout = setTimeout(() => func(...args), wait);
     };
@@ -668,7 +675,7 @@ const PrivyConnect = () => {
       );
     };
 
-    const sendPrizeTransaction = async (prize, username) => {
+    const sendPrizeTransaction = debounce(async (prize, username) => {
       console.log('ℹ️ Iniciando sendPrizeTransaction, prêmio:', prize, 'username:', username);
       if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
         console.error('❌ Endereço de carteira inválido:', monadWalletAddress);
@@ -683,7 +690,7 @@ const PrivyConnect = () => {
         console.log('ℹ️ Iniciando processamento da fila de transações...');
         processQueue();
       }
-    };
+    }, 1000);
 
     const processQueue = async () => {
       if (isProcessing || transactionQueue.length === 0) {
@@ -710,6 +717,7 @@ const PrivyConnect = () => {
         } else {
           const errorData = await response.json();
           console.error('❌ Falha ao chamar backend, status:', response.status, 'mensagem:', errorData.error);
+          throw new Error(errorData.error);
         }
       } catch (error) {
         console.error('❌ Falha ao chamar backend:', error);
@@ -730,7 +738,7 @@ const PrivyConnect = () => {
       }
     };
 
-    const sendGameAction = async () => {
+    const sendGameAction = debounce(async () => {
       console.log('ℹ️ Iniciando sendGameAction, endereço da carteira:', monadWalletAddress);
       if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
         console.error('❌ Endereço de carteira inválido:', monadWalletAddress);
@@ -752,19 +760,20 @@ const PrivyConnect = () => {
         console.log('ℹ️ Resposta bruta:', text);
         if (!response.ok) {
           console.error('❌ Falha ao chamar backend, status:', response.status, 'resposta:', text);
-          return;
+          throw new Error(`Failed to call backend, status: ${response.status}, response: ${text}`);
         }
         if (!contentType || !contentType.includes('application/json')) {
           console.error('❌ Resposta não é JSON:', contentType, 'resposta:', text);
-          return;
+          throw new Error('Response is not JSON');
         }
         const data = JSON.parse(text);
         console.log('✅ Transação de ação do jogo enviada com sucesso:', data.hash);
         return data;
       } catch (error) {
         console.error('❌ Falha ao processar ação do jogo:', error);
+        throw error;
       }
-    };
+    }, 1000);
 
     window.sendPrizeTransaction = (prize, username) => {
       sendPrizeTransaction(prize, username);
