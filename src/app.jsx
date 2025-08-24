@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client';
 import { PrivyProvider, useLogin, usePrivy, useWallets, useCrossAppAccounts } from '@privy-io/react-auth';
 import { defineChain, createPublicClient, http } from 'viem';
 import Draggable from 'react-draggable';
+
 // Define the Monad Testnet chain
 const monadTestnet = defineChain({
   id: 10143,
@@ -24,8 +25,10 @@ const monadTestnet = defineChain({
     default: { name: 'Monad Explorer', url: 'https://testnet.monadexplorer.com' },
   },
 });
+
 // Contract address
 const contractAddress = '0x04860C366B7DB25C087eE170b75d38CC4d50200D';
+
 // ABI for HiLoGameMonadID contract
 const contractABI = [
   {
@@ -208,12 +211,15 @@ const contractABI = [
     "type": "function"
   }
 ];
+
 const publicClient = createPublicClient({
   chain: monadTestnet,
   transport: http(),
 });
+
 const DEV_ADDRESS = '0x8a6BFa87D9e7053728076B2C84cC0acd829A2958';
 const BACKEND_URL = '/api';
+
 // WalletPanel component
 const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet }) => {
   const [showBalance, setShowBalance] = useState(false);
@@ -317,6 +323,7 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
     </div>
   );
 };
+
 // PrivyConnect component
 const PrivyConnect = () => {
   const { login } = useLogin({
@@ -346,6 +353,7 @@ const PrivyConnect = () => {
   const [usernamesMap, setUsernamesMap] = useState(new Map());
   const [lastLeaderboardUpdate, setLastLeaderboardUpdate] = useState(0);
   const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
+
   // Debounce function to limit event handling
   const debounce = (func, wait) => {
     let timeout;
@@ -354,6 +362,7 @@ const PrivyConnect = () => {
       timeout = setTimeout(() => func(...args), wait);
     };
   };
+
   useEffect(() => {
     console.log('ℹ️ Privy ready status:', ready);
     if (!ready) {
@@ -430,6 +439,7 @@ const PrivyConnect = () => {
       unsubscribeReset();
     };
   }, [ready, authenticated, user]);
+
   useEffect(() => {
     const fetchBalance = async () => {
       if (monadWalletAddress) {
@@ -446,6 +456,7 @@ const PrivyConnect = () => {
     const balanceInterval = setInterval(fetchBalance, 10000);
     return () => clearInterval(balanceInterval);
   }, [monadWalletAddress]);
+
   const checkOwner = async () => {
     try {
       const owner = await publicClient.readContract({
@@ -460,6 +471,7 @@ const PrivyConnect = () => {
       console.error('❌ Failed to check owner:', error);
     }
   };
+
   const fundWallet = async () => {
     if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
       console.error('❌ Invalid wallet address:', monadWalletAddress);
@@ -486,6 +498,7 @@ const PrivyConnect = () => {
       console.error('❌ Failed to fund wallet:', error);
     }
   };
+
   const fetchUsername = async (walletAddress) => {
     if (!walletAddress) {
       console.warn('❌ No wallet address provided for fetchUsername');
@@ -523,14 +536,26 @@ const PrivyConnect = () => {
       setLoadingUsername(false);
     }
   };
+
   const fetchLeaderboardAndRank = async (forceUpdate = false) => {
     let leaderboardData = [];
     try {
       if (!forceUpdate && leaderboard.length > 0) {
         console.log('ℹ️ Usando leaderboard em cache:', leaderboard);
+        // Multiply scores by 2 for local leaderboard display
+        const adjustedLeaderboard = leaderboard.map(entry => ({
+          ...entry,
+          score: Number(entry.score) * 2
+        }));
         window.dispatchEvent(
           new CustomEvent('leaderboardUpdated', {
-            detail: { leaderboard, playerRank },
+            detail: { 
+              leaderboard: adjustedLeaderboard, 
+              playerRank: { 
+                ...playerRank, 
+                score: Number(playerRank.score) * 2 
+              }
+            },
           })
         );
         if (monadWalletAddress && isAddress(monadWalletAddress)) {
@@ -541,13 +566,16 @@ const PrivyConnect = () => {
             functionName: 'getPlayerRank',
             args: [monadWalletAddress],
           });
-          const updatedPlayerRank = { rank: Number(rank), score: Number(score) };
+          const updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 };
           console.log('✅ Rank do jogador obtido com sucesso:', updatedPlayerRank);
-          setPlayerRank(updatedPlayerRank);
-          localStorage.setItem('cachedPlayerRank', JSON.stringify(updatedPlayerRank));
+          setPlayerRank({ rank: Number(rank), score: Number(score) });
+          localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
           window.dispatchEvent(
             new CustomEvent('leaderboardUpdated', {
-              detail: { leaderboard, playerRank: updatedPlayerRank },
+              detail: { 
+                leaderboard: adjustedLeaderboard, 
+                playerRank: updatedPlayerRank 
+              },
             })
           );
         }
@@ -566,7 +594,7 @@ const PrivyConnect = () => {
         return {
           player: entry.player,
           username: userName || 'Unknown',
-          score: Number(entry.score),
+          score: Number(entry.score) * 2, // Multiply score by 2 for local display
         };
       }));
       leaderboardData.sort((a, b) => b.score - a.score);
@@ -579,18 +607,18 @@ const PrivyConnect = () => {
             functionName: 'getPlayerRank',
             args: [monadWalletAddress],
           });
-          updatedPlayerRank = { rank: Number(rank), score: Number(score) };
+          updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 }; // Multiply score by 2
           console.log('✅ Rank do jogador obtido com sucesso:', updatedPlayerRank);
-          setPlayerRank(updatedPlayerRank);
-          localStorage.setItem('cachedPlayerRank', JSON.stringify(updatedPlayerRank));
+          setPlayerRank({ rank: Number(rank), score: Number(score) });
+          localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
         } catch (error) {
           console.error('❌ Falha ao obter rank do jogador para', monadWalletAddress, ':', error);
           const playerEntry = leaderboardData.find(entry => entry.player.toLowerCase() === monadWalletAddress.toLowerCase());
           if (playerEntry) {
             updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score) };
             console.log('ℹ️ Usando dados do leaderboard para rank do jogador:', updatedPlayerRank);
-            setPlayerRank(updatedPlayerRank);
-            localStorage.setItem('cachedPlayerRank', JSON.stringify(updatedPlayerRank));
+            setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }); // Store original score
+            localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }));
           } else {
             console.warn('⚠️ Jogador não encontrado no leaderboard, usando rank padrão:', updatedPlayerRank);
           }
@@ -602,8 +630,14 @@ const PrivyConnect = () => {
         })
       );
       console.log('✅ Leaderboard obtido com sucesso:', leaderboardData);
-      localStorage.setItem('cachedLeaderboard', JSON.stringify(leaderboardData));
-      setLeaderboard(leaderboardData);
+      localStorage.setItem('cachedLeaderboard', JSON.stringify(leaderboardData.map(entry => ({
+        ...entry,
+        score: entry.score / 2 // Store original score in cache
+      }))));
+      setLeaderboard(leaderboardData.map(entry => ({
+        ...entry,
+        score: entry.score / 2 // Store original score in state
+      })));
     } catch (error) {
       console.error('❌ Falha ao obter leaderboard:', error);
       if (error.message.includes('429')) {
@@ -612,12 +646,14 @@ const PrivyConnect = () => {
       }
     }
   };
+
   useEffect(() => {
     if (ready) {
       console.log('ℹ️ Inicializando obtenção do leaderboard');
       fetchLeaderboardAndRank();
     }
   }, [ready]);
+
   useEffect(() => {
     let transactionQueue = [];
     let isProcessing = false;
@@ -631,13 +667,14 @@ const PrivyConnect = () => {
         lowerMessage.includes('user rejected')
       );
     };
+
     const sendPrizeTransaction = async (prize, username) => {
       console.log('ℹ️ Iniciando sendPrizeTransaction, prêmio:', prize, 'username:', username);
       if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
         console.error('❌ Endereço de carteira inválido:', monadWalletAddress);
         return;
       }
-      const adjustedPrize = Math.floor(prize / 2); // Divide por 2 para corrigir dobração no Monad Games ID
+      const adjustedPrize = Math.floor(prize / 2); // Divide por 2 para Monad Games ID
       console.log('ℹ️ Prêmio ajustado para Monad Games ID:', adjustedPrize);
       // Dispara evento para o jogo local com o prêmio completo
       window.dispatchEvent(new CustomEvent('localPrizeConfirmed', { detail: { prize } }));
@@ -647,6 +684,7 @@ const PrivyConnect = () => {
         processQueue();
       }
     };
+
     const processQueue = async () => {
       if (isProcessing || transactionQueue.length === 0) {
         console.log('ℹ️ Processamento da fila parado: isProcessing=', isProcessing, 'queueLength=', transactionQueue.length);
@@ -691,6 +729,7 @@ const PrivyConnect = () => {
         }
       }
     };
+
     const sendGameAction = async () => {
       console.log('ℹ️ Iniciando sendGameAction, endereço da carteira:', monadWalletAddress);
       if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
@@ -726,12 +765,14 @@ const PrivyConnect = () => {
         console.error('❌ Falha ao processar ação do jogo:', error);
       }
     };
+
     window.sendPrizeTransaction = (prize, username) => {
       sendPrizeTransaction(prize, username);
     };
     window.sendGameAction = () => {
       sendGameAction();
     };
+
     const handlePrizeAwarded = (event) => {
       const prize = event.detail.prize;
       const eventUsername = event.detail.username || '';
@@ -748,11 +789,13 @@ const PrivyConnect = () => {
       console.log('✅ Prêmio e username válidos, prosseguindo com transação');
       window.sendPrizeTransaction(prize, currentUsername);
     };
+
     window.addEventListener('prizeAwarded', handlePrizeAwarded);
     return () => {
       window.removeEventListener('prizeAwarded', handlePrizeAwarded);
     };
   }, [authenticated, monadWalletAddress, username]);
+
   const buttonStyle = {
     width: '120px',
     padding: '10px 10px',
@@ -838,6 +881,7 @@ const PrivyConnect = () => {
     margin: '0 0 10px 0',
     textAlign: 'center',
   };
+
   return (
     <Draggable handle=".drag-handle">
       <div style={panelStyle}>
@@ -878,6 +922,7 @@ const PrivyConnect = () => {
     </Draggable>
   );
 };
+
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
   try {
