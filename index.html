@@ -12,12 +12,12 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #30036D; /* Mesma cor de fundo do jogo */
+            background-color: #30036D;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 3000; /* Acima de tudo */
+            z-index: 3000;
         }
         #welcome-image {
             width: min(80vw, 800px);
@@ -27,7 +27,7 @@
         }
         #play-game-btn {
             padding: 12px 24px;
-            background: linear-gradient(to bottom, #4CAF50, #388E3C); /* Mesmo estilo do botão PLAY */
+            background: linear-gradient(to bottom, #4CAF50, #388E3C);
             border: none;
             border-radius: 8px;
             color: white;
@@ -40,9 +40,8 @@
             background: linear-gradient(to bottom, #388E3C, #4CAF50);
         }
         #game-content {
-            display: none; /* Oculta o jogo por padrão */
+            display: none;
         }
-        /* Responsividade para celular */
         @media (max-width: 600px) {
             #welcome-image {
                 width: min(90vw, 400px);

@@ -4,6 +4,7 @@ import { PrivyProvider } from '@privy-io/react-auth';
 import Draggable from 'react-draggable';
 import PrivyConnect from './components/PrivyConnect';
 import { monadTestnet } from './config';
+import './styles/game.css'; // Adicione esta linha
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
