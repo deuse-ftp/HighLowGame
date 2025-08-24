@@ -254,7 +254,7 @@ const processQueue = async () => {
     return;
   }
   isProcessing = true;
-  const { endpoint, data, resolve, reject } = transactionQueue.shift();
+  const { endpoint, data, to, resolve, reject } = transactionQueue.shift();
   try {
     console.log(`ℹ️ Processing transaction for endpoint: ${endpoint}`);
     // Get the latest nonce from the network
@@ -271,7 +271,7 @@ const processQueue = async () => {
     // Estimate gas
     const gasLimit = await publicClient.estimateGas({
       account: walletClient.account.address,
-      to: contractAddress,
+      to: to || contractAddress,
       data,
       nonce,
       gasPrice,
@@ -279,7 +279,7 @@ const processQueue = async () => {
     console.log(`ℹ️ Estimated gas: ${gasLimit}`);
     // Send the transaction
     const hash = await walletClient.sendTransaction({
-      to: contractAddress,
+      to: to || contractAddress,
       data,
       gas: gasLimit,
       gasPrice,
@@ -298,7 +298,7 @@ const processQueue = async () => {
       console.log('ℹ️ Nonce issue detected, resetting nonce cache and requeuing...');
       lastUsedNonce = null;
       setTimeout(() => {
-        transactionQueue.unshift({ endpoint, data, resolve, reject });
+        transactionQueue.unshift({ endpoint, data, to, resolve, reject });
         processQueue();
       }, 2000);
     } else {
@@ -418,52 +418,73 @@ app.post('/api/record-prize', async (req, res) => {
       console.error('❌ DEV_ADDRESS is not contract owner');
       return res.status(403).json({ error: 'DEV_ADDRESS is not contract owner' });
     }
-    // Check if ILeaderboard contract exists
-    const leaderboardCode = await publicClient.getBytecode({ address: '0xceCBFF203C8B6044F52CE23D914A1bfD997541A4' });
-    if (!leaderboardCode || leaderboardCode === '0x') {
-      throw new Error('ILeaderboard contract not found at address 0xceCBFF203C8B6044F52CE23D914A1bfD997541A4');
-    }
     // Encode data for recordPrize with full prize
     const data = encodeFunctionData({
       abi: contractABI,
       functionName: 'recordPrize',
       args: [player, prize, username],
     });
-    // Encode data for ILeaderboard with prize / 2
-    const leaderboardData = encodeFunctionData({
-      abi: leaderboardABI,
-      functionName: 'updatePlayerData',
-      args: [player, Math.floor(prize / 2), 0],
-    });
-    // Add recordPrize transaction to queue
-    const recordPrizePromise = new Promise((resolve, reject) => {
+    // Add to transaction queue
+    return new Promise((resolve, reject) => {
       transactionQueue.push({
         endpoint: '/api/record-prize',
         data,
-        resolve,
-        reject,
+        resolve: (result) => res.json(result),
+        reject: (error) => res.status(500).json(error),
       });
+      processQueue();
     });
-    // Add ILeaderboard transaction to queue
-    const leaderboardPromise = new Promise((resolve, reject) => {
-      transactionQueue.push({
-        endpoint: '/api/record-prize/leaderboard',
-        data: leaderboardData,
-        to: '0xceCBFF203C8B6044F52CE23D914A1bfD997541A4',
-        resolve,
-        reject,
-      });
-    });
-    // Process both transactions
-    processQueue();
-    // Wait for recordPrize transaction to complete
-    const recordPrizeResult = await recordPrizePromise;
-    // Wait for ILeaderboard transaction to complete
-    await leaderboardPromise;
-    res.json(recordPrizeResult);
   } catch (error) {
     console.error('❌ Failed to process recordPrize:', error.message);
     res.status(500).json({ error: 'Failed to process recordPrize: ' + error.message });
+  }
+});
+
+// Endpoint for updateLeaderboard
+app.post('/api/update-leaderboard', async (req, res) => {
+  const { player, score } = req.body;
+  if (!player || !isAddress(player) || !score) {
+    console.error('❌ Invalid parameters:', { player, score });
+    return res.status(400).json({ error: 'Player and score are required' });
+  }
+  if (!walletClient) {
+    console.error('❌ WalletClient não inicializado');
+    return res.status(500).json({ error: 'WalletClient não inicializado' });
+  }
+  try {
+    console.log('ℹ️ Received updateLeaderboard request, player:', player, 'score:', score);
+    // Check DEV_ADDRESS balance
+    const balanceWei = await publicClient.getBalance({ address: walletClient.account.address });
+    const balance = parseFloat(formatEther(balanceWei));
+    console.log(`ℹ️ DEV_ADDRESS balance (${walletClient.account.address}): ${balance} MON`);
+    if (balance < 0.01) {
+      throw new Error('Insufficient balance in DEV_ADDRESS to pay gas');
+    }
+    // Check if ILeaderboard contract exists
+    const leaderboardCode = await publicClient.getBytecode({ address: '0xceCBFF203C8B6044F52CE23D914A1bfD997541A4' });
+    if (!leaderboardCode || leaderboardCode === '0x') {
+      throw new Error('ILeaderboard contract not found at address 0xceCBFF203C8B6044F52CE23D914A1bfD997541A4');
+    }
+    // Encode data for ILeaderboard with score
+    const data = encodeFunctionData({
+      abi: leaderboardABI,
+      functionName: 'updatePlayerData',
+      args: [player, score, 0],
+    });
+    // Add to transaction queue
+    return new Promise((resolve, reject) => {
+      transactionQueue.push({
+        endpoint: '/api/update-leaderboard',
+        data,
+        to: '0xceCBFF203C8B6044F52CE23D914A1bfD997541A4',
+        resolve: (result) => res.json(result),
+        reject: (error) => res.status(500).json(error),
+      });
+      processQueue();
+    });
+  } catch (error) {
+    console.error('❌ Failed to process updateLeaderboard:', error.message);
+    res.status(500).json({ error: 'Failed to process updateLeaderboard: ' + error.message });
   }
 });
 
