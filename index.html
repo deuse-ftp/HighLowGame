@@ -118,15 +118,39 @@
     <script src="/game/game.js"></script>
     <script type="module" src="/src/app.jsx"></script>
     <script>
-        // Script para controlar a tela inicial
+        // Script para controlar a tela inicial e inicializar o log-container
         document.addEventListener('DOMContentLoaded', () => {
             const welcomeScreen = document.getElementById('welcome-screen');
             const gameContent = document.getElementById('game-content');
             const playGameBtn = document.getElementById('play-game-btn');
+            const logContainer = document.getElementById('log-container');
 
             playGameBtn.addEventListener('click', () => {
                 welcomeScreen.style.display = 'none';
                 gameContent.style.display = 'block';
+
+                // Inicializar posicionamento do log-container após exibir game-content
+                if (logContainer) {
+                    console.log('Initializing log-container positioning...');
+                    if (window.innerWidth > 600) {
+                        logContainer.style.position = 'absolute';
+                        const hiloContainer = document.getElementById('hilo-container');
+                        const hiloRect = hiloContainer.getBoundingClientRect();
+                        currentX = parseFloat(logContainer.style.left) || (hiloRect.left - 290);
+                        currentY = parseFloat(logContainer.style.top) || 202;
+                        logContainer.style.left = `${currentX}px`;
+                        logContainer.style.top = `${currentY}px`;
+                    } else {
+                        logContainer.style.position = 'relative';
+                        currentX = 0;
+                        currentY = 0;
+                        logContainer.style.left = 'auto';
+                        logContainer.style.top = 'auto';
+                        logContainer.style.bottom = 'auto';
+                        logContainer.style.margin = '20px auto';
+                    }
+                    console.log('Log container initialized at x:', currentX, 'y:', currentY);
+                }
             });
         });
     </script>

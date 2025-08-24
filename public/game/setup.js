@@ -7,45 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     console.log('Initializing drag for log-container...');
-
-    // Função para inicializar a posição do log-container
-    function initializeLogContainerPosition() {
-        if (window.innerWidth > 600) {
-            logContainer.style.position = 'absolute';
-            const hiloContainer = document.getElementById('hilo-container');
-            const hiloRect = hiloContainer.getBoundingClientRect();
-            currentX = parseFloat(logContainer.style.left) || (hiloRect.left - 290);
-            currentY = parseFloat(logContainer.style.top) || 202;
-            logContainer.style.left = `${currentX}px`;
-            logContainer.style.top = `${currentY}px`;
-            logContainer.style.margin = '0';
-        } else {
-            logContainer.style.position = 'relative';
-            currentX = 0;
-            currentY = 0;
-            logContainer.style.left = 'auto';
-            logContainer.style.top = 'auto';
-            logContainer.style.bottom = 'auto';
-            logContainer.style.margin = '20px auto';
-        }
-        console.log('Log container initialized at x:', currentX, 'y:', currentY);
-    }
-
-    // Inicializar posição quando o game-content for exibido
-    const welcomeScreen = document.getElementById('welcome-screen');
-    const gameContent = document.getElementById('game-content');
-    const playGameBtn = document.getElementById('play-game-btn');
-    playGameBtn.addEventListener('click', () => {
-        welcomeScreen.style.display = 'none';
-        gameContent.style.display = 'block';
-        initializeLogContainerPosition(); // Inicializa posição após exibir o jogo
-    });
-
-    // Inicializar posição se o game-content já estiver visível (caso a tela inicial seja desativada)
-    if (gameContent.style.display !== 'none') {
-        initializeLogContainerPosition();
-    }
-
     logContainer.addEventListener('mousedown', (e) => {
         if (e.target.closest('button')) return;
         console.log('Drag started on log-container');
