@@ -943,6 +943,7 @@
                     nextCardElem.style.opacity = '1';
                     nextCardElem.style.transform = 'translate(-50%, -50%) rotateY(0deg)';
                 }, 10);
+                console.log(`Carta atual: ${currentCard.rank} (rank ${rank}), Próxima: ${nextCard.rank} (rank ${nextRank}), Aposta: ${guess}`);
                 if (nextRank === rank) {
                     // Special case: Loss only if Ace with "higher" or King with "lower" and same rank
                     if ((rank === 1 && guess === 'higher') || (rank === 13 && guess === 'lower')) {
@@ -998,6 +999,7 @@
                         }, 400);
                     }
                 }
+                console.log(`Resultado: ${result}`);
                 const currentRankDisplay = rankDisplayMap[currentCard.rank] || currentCard.rank;
                 const currentSuitDisplay = suitDisplayMap[currentCard.suit];
                 gameHistory.push({
