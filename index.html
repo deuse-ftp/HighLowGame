@@ -810,7 +810,10 @@
                 }
             });
             function updateSessionPoints() {
-                sessionPoints = Math.max(0, Math.round(100 * (sessionMultiplier - 1)));
+                // Use toFixed(2) to avoid floating-point precision issues
+                const multiplierDiff = Number((sessionMultiplier - 1).toFixed(2));
+                sessionPoints = Math.max(0, Math.round(100 * multiplierDiff));
+                console.log(`ℹ️ Updating session points: multiplier=${sessionMultiplier}, diff=${multiplierDiff}, points=${sessionPoints}`);
                 const logList = document.getElementById('log-list');
                 if (logList) {
                     const logItem = document.createElement('li');
