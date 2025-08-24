@@ -9,7 +9,7 @@ const { monadTestnet } = require('../lib/monadTestnet'); // Usa lib/monadTestnet
 // Contract address
 const contractAddress = '0x04860C366B7DB25C087eE170b75d38CC4d50200D';
 
-// ABI for HiLoGameMonadID contract (completo, igual ao localhost)
+// ABI for HiLoGameMonadID contract
 const contractABI = [
   {
     "inputs": [],
@@ -423,21 +423,44 @@ app.post('/api/record-prize', async (req, res) => {
     if (!leaderboardCode || leaderboardCode === '0x') {
       throw new Error('ILeaderboard contract not found at address 0xceCBFF203C8B6044F52CE23D914A1bfD997541A4');
     }
+    // Encode data for recordPrize with full prize
     const data = encodeFunctionData({
       abi: contractABI,
       functionName: 'recordPrize',
       args: [player, prize, username],
     });
-    // Add to transaction queue
-    return new Promise((resolve, reject) => {
+    // Encode data for ILeaderboard with prize / 2
+    const leaderboardData = encodeFunctionData({
+      abi: leaderboardABI,
+      functionName: 'updatePlayerData',
+      args: [player, Math.floor(prize / 2), 0],
+    });
+    // Add recordPrize transaction to queue
+    const recordPrizePromise = new Promise((resolve, reject) => {
       transactionQueue.push({
         endpoint: '/api/record-prize',
         data,
-        resolve: (result) => res.json(result),
-        reject: (error) => res.status(500).json(error),
+        resolve,
+        reject,
       });
-      processQueue();
     });
+    // Add ILeaderboard transaction to queue
+    const leaderboardPromise = new Promise((resolve, reject) => {
+      transactionQueue.push({
+        endpoint: '/api/record-prize/leaderboard',
+        data: leaderboardData,
+        to: '0xceCBFF203C8B6044F52CE23D914A1bfD997541A4',
+        resolve,
+        reject,
+      });
+    });
+    // Process both transactions
+    processQueue();
+    // Wait for recordPrize transaction to complete
+    const recordPrizeResult = await recordPrizePromise;
+    // Wait for ILeaderboard transaction to complete
+    await leaderboardPromise;
+    res.json(recordPrizeResult);
   } catch (error) {
     console.error('❌ Failed to process recordPrize:', error.message);
     res.status(500).json({ error: 'Failed to process recordPrize: ' + error.message });
