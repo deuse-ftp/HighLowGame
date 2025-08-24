@@ -7,7 +7,7 @@ const { privateKeyToAccount } = require('viem/accounts');
 const { monadTestnet } = require('../lib/monadTestnet'); // Usa lib/monadTestnet.js
 
 // Contract address
-const contractAddress = '0xF7b67485890eC691c69b229449F11eEf167249a8';
+const contractAddress = '0x94D5c051A68EF8fB6a8B652448F403C19d95F5D1';
 
 // ABI for HiLoGameMonadID contract (completo, igual ao localhost)
 const contractABI = [
