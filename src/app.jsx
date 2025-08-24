@@ -651,7 +651,7 @@ const PrivyConnect = () => {
       // Divide prize by 2 to correct for duplication
       const adjustedPrize = Math.floor(prize / 2);
       console.log('ℹ️ Adjusted prize (divided by 2):', adjustedPrize);
-      transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
+      transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress, endpoint: '/api/record-prize' });
       if (!isProcessing) {
         console.log('ℹ️ Starting transaction queue processing...');
         processQueue();
@@ -663,11 +663,11 @@ const PrivyConnect = () => {
         return;
       }
       isProcessing = true;
-      const { prize, username, player } = transactionQueue.shift();
-      console.log('ℹ️ Processing transaction for prize:', prize, 'username:', username, 'player:', player);
+      const { prize, username, player, endpoint } = transactionQueue.shift();
+      console.log('ℹ️ Processing transaction for endpoint:', endpoint, 'prize:', prize, 'username:', username, 'player:', player);
       try {
-        console.log('ℹ️ Sending request to record-prize endpoint');
-        const response = await fetch(`${BACKEND_URL}/record-prize`, {
+        console.log('ℹ️ Sending request to', endpoint);
+        const response = await fetch(`${BACKEND_URL}${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -688,7 +688,7 @@ const PrivyConnect = () => {
         console.error('❌ Failed to call backend:', error);
         if (!isUserCancellationError(error)) {
           console.log('ℹ️ Requeuing transaction (not user cancellation)');
-          transactionQueue.unshift({ prize, username, player });
+          transactionQueue.unshift({ prize, username, player, endpoint });
         } else {
           console.log('ℹ️ Transaction canceled by user, not requeuing');
         }
@@ -708,33 +708,10 @@ const PrivyConnect = () => {
         console.error('❌ Invalid wallet address:', monadWalletAddress);
         return;
       }
-      try {
-        console.log('ℹ️ Sending request to game-action endpoint:', 'https://hi-lo-39h3.vercel.app/api/game-action');
-        const response = await fetch(`${BACKEND_URL}/game-action`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify({ player: monadWalletAddress }),
-        });
-        const contentType = response.headers.get('content-type');
-        console.log('ℹ️ Response status:', response.status, 'Content-Type:', contentType);
-        const text = await response.text();
-        console.log('ℹ️ Raw response:', text);
-        if (!response.ok) {
-          console.error('❌ Failed to call backend, status:', response.status, 'response:', text);
-          return;
-        }
-        if (!contentType || !contentType.includes('application/json')) {
-          console.error('❌ Response is not JSON:', contentType, 'response:', text);
-          return;
-        }
-        const data = JSON.parse(text);
-        console.log('✅ Game action transaction sent successfully:', data.hash);
-        return data;
-      } catch (error) {
-        console.error('❌ Failed to process game action:', error);
+      transactionQueue.push({ player: monadWalletAddress, endpoint: '/api/game-action' });
+      if (!isProcessing) {
+        console.log('ℹ️ Starting transaction queue processing...');
+        processQueue();
       }
     };
     window.sendPrizeTransaction = (prize, username) => {
