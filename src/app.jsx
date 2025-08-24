@@ -690,7 +690,7 @@ const PrivyConnect = () => {
         console.log('ℹ️ Iniciando processamento da fila de transações...');
         processQueue();
       }
-    }, 1000);
+    }, 700);
 
     const processQueue = async () => {
       if (isProcessing || transactionQueue.length === 0) {
@@ -773,7 +773,7 @@ const PrivyConnect = () => {
         console.error('❌ Falha ao processar ação do jogo:', error);
         throw error;
       }
-    }, 1000);
+    }, 700);
 
     window.sendPrizeTransaction = (prize, username) => {
       sendPrizeTransaction(prize, username);
