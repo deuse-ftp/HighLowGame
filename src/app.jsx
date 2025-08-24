@@ -6,7 +6,6 @@ import ReactDOM from 'react-dom/client';
 import { PrivyProvider, useLogin, usePrivy, useWallets, useCrossAppAccounts } from '@privy-io/react-auth';
 import { defineChain, createPublicClient, http } from 'viem';
 import Draggable from 'react-draggable';
-
 // Define the Monad Testnet chain
 const monadTestnet = defineChain({
   id: 10143,
@@ -25,10 +24,8 @@ const monadTestnet = defineChain({
     default: { name: 'Monad Explorer', url: 'https://testnet.monadexplorer.com' },
   },
 });
-
 // Contract address
 const contractAddress = '0xF7b67485890eC691c69b229449F11eEf167249a8';
-
 // ABI for HiLoGameMonadID contract
 const contractABI = [
   {
@@ -211,15 +208,12 @@ const contractABI = [
     "type": "function"
   }
 ];
-
 const publicClient = createPublicClient({
   chain: monadTestnet,
   transport: http(),
 });
-
 const DEV_ADDRESS = '0x8a6BFa87D9e7053728076B2C84cC0acd829A2958';
 const BACKEND_URL = '/api';
-
 // WalletPanel component
 const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet }) => {
   const [showBalance, setShowBalance] = useState(false);
@@ -323,7 +317,6 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
     </div>
   );
 };
-
 // PrivyConnect component
 const PrivyConnect = () => {
   const { login } = useLogin({
@@ -353,7 +346,6 @@ const PrivyConnect = () => {
   const [usernamesMap, setUsernamesMap] = useState(new Map());
   const [lastLeaderboardUpdate, setLastLeaderboardUpdate] = useState(0);
   const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
-
   // Debounce function to limit event handling
   const debounce = (func, wait) => {
     let timeout;
@@ -362,7 +354,6 @@ const PrivyConnect = () => {
       timeout = setTimeout(() => func(...args), wait);
     };
   };
-
   useEffect(() => {
     console.log('ℹ️ Privy ready status:', ready);
     if (!ready) {
@@ -439,7 +430,6 @@ const PrivyConnect = () => {
       unsubscribeReset();
     };
   }, [ready, authenticated, user]);
-
   useEffect(() => {
     const fetchBalance = async () => {
       if (monadWalletAddress) {
@@ -456,7 +446,6 @@ const PrivyConnect = () => {
     const balanceInterval = setInterval(fetchBalance, 10000);
     return () => clearInterval(balanceInterval);
   }, [monadWalletAddress]);
-
   const checkOwner = async () => {
     try {
       const owner = await publicClient.readContract({
@@ -471,7 +460,6 @@ const PrivyConnect = () => {
       console.error('❌ Failed to check owner:', error);
     }
   };
-
   const fundWallet = async () => {
     if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
       console.error('❌ Invalid wallet address:', monadWalletAddress);
@@ -498,7 +486,6 @@ const PrivyConnect = () => {
       console.error('❌ Failed to fund wallet:', error);
     }
   };
-
   const fetchUsername = async (walletAddress) => {
     if (!walletAddress) {
       console.warn('❌ No wallet address provided for fetchUsername');
@@ -536,7 +523,6 @@ const PrivyConnect = () => {
       setLoadingUsername(false);
     }
   };
-
   const fetchLeaderboardAndRank = async (forceUpdate = false) => {
     let leaderboardData = [];
     try {
@@ -626,14 +612,12 @@ const PrivyConnect = () => {
       }
     }
   };
-
   useEffect(() => {
     if (ready) {
       console.log('ℹ️ Initializing leaderboard fetch');
       fetchLeaderboardAndRank();
     }
   }, [ready]);
-
   useEffect(() => {
     let transactionQueue = [];
     let isProcessing = false;
@@ -648,12 +632,15 @@ const PrivyConnect = () => {
       );
     };
     const sendPrizeTransaction = async (prize, username) => {
-      console.log('ℹ️ Starting sendPrizeTransaction, prize:', prize, 'username:', username);
+      console.log('ℹ️ Starting sendPrizeTransaction, original prize:', prize, 'username:', username);
       if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
         console.error('❌ Invalid wallet address:', monadWalletAddress);
         return;
       }
-      transactionQueue.push({ prize, username, player: monadWalletAddress });
+      // Divide prize by 2 to correct for duplication
+      const adjustedPrize = Math.floor(prize / 2);
+      console.log('ℹ️ Adjusted prize (divided by 2):', adjustedPrize);
+      transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
       if (!isProcessing) {
         console.log('ℹ️ Starting transaction queue processing...');
         processQueue();
@@ -711,7 +698,7 @@ const PrivyConnect = () => {
         return;
       }
       try {
-        console.log('ℹ️ Sending request to game-action endpoint:', `https://hi-lo-39h3.vercel.app/api/game-action`);
+        console.log('ℹ️ Sending request to game-action endpoint:', 'https://hi-lo-39h3.vercel.app/api/game-action');
         const response = await fetch(`${BACKEND_URL}/game-action`, {
           method: 'POST',
           headers: {
@@ -769,7 +756,6 @@ const PrivyConnect = () => {
       window.removeEventListener('prizeAwarded', handlePrizeAwarded);
     };
   }, [authenticated, monadWalletAddress, username]);
-
   const buttonStyle = {
     width: '120px',
     padding: '10px 10px',
@@ -895,7 +881,6 @@ const PrivyConnect = () => {
     </Draggable>
   );
 };
-
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
   try {
