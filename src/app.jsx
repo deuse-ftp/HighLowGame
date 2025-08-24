@@ -346,6 +346,7 @@ const PrivyConnect = () => {
   const [usernamesMap, setUsernamesMap] = useState(new Map());
   const [lastLeaderboardUpdate, setLastLeaderboardUpdate] = useState(0);
   const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
+  const [transactionCount, setTransactionCount] = useState({}); // Track transaction counts per player
   // Debounce function to limit event handling
   const debounce = (func, wait) => {
     let timeout;
@@ -402,6 +403,7 @@ const PrivyConnect = () => {
       localStorage.removeItem('cachedPlayerRank');
       setLeaderboard([]);
       setPlayerRank({ rank: 0, score: 0 });
+      setTransactionCount({});
       fetchLeaderboardAndRank(true);
     }, 1000);
     const unsubscribeUpdated = publicClient.watchEvent({
@@ -528,7 +530,6 @@ const PrivyConnect = () => {
     try {
       if (!forceUpdate && leaderboard.length > 0) {
         console.log('ℹ️ Using cached leaderboard:', leaderboard);
-        // Multiply scores by 2 to correct for division in sendPrizeTransaction
         const adjustedLeaderboard = leaderboard.map(entry => ({
           ...entry,
           score: entry.score * 2
@@ -568,14 +569,18 @@ const PrivyConnect = () => {
         if (!userName || userName === '') {
           userName = await fetchUsername(entry.player);
         }
+        // Mock transaction count (divide by 2) since ILeaderboard ABI is not fully available
+        const rawTxCount = transactionCount[entry.player] || 0;
+        const adjustedTxCount = Math.floor(rawTxCount / 2);
         return {
           player: entry.player,
           username: userName || 'Unknown',
           score: Number(entry.score) * 2, // Multiply score by 2 to correct for division
+          transactions: adjustedTxCount // Mocked transaction count
         };
       }));
       leaderboardData.sort((a, b) => b.score - a.score);
-      let updatedPlayerRank = { rank: 0, score: 0 };
+      let updatedPlayerRank = { rank: 0, score: 0, transactions: 0 };
       if (monadWalletAddress && isAddress(monadWalletAddress)) {
         try {
           const [rank, score] = await publicClient.readContract({
@@ -584,7 +589,9 @@ const PrivyConnect = () => {
             functionName: 'getPlayerRank',
             args: [monadWalletAddress],
           });
-          updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 }; // Multiply score by 2
+          const rawTxCount = transactionCount[monadWalletAddress] || 0;
+          const adjustedTxCount = Math.floor(rawTxCount / 2);
+          updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2, transactions: adjustedTxCount };
           console.log('✅ Player rank fetched successfully:', updatedPlayerRank);
           setPlayerRank({ rank: Number(rank), score: Number(score) });
           localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
@@ -592,9 +599,11 @@ const PrivyConnect = () => {
           console.error('❌ Failed to fetch player rank for', monadWalletAddress, ':', error);
           const playerEntry = leaderboardData.find(entry => entry.player.toLowerCase() === monadWalletAddress.toLowerCase());
           if (playerEntry) {
-            updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score) };
+            const rawTxCount = transactionCount[monadWalletAddress] || 0;
+            const adjustedTxCount = Math.floor(rawTxCount / 2);
+            updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score), transactions: adjustedTxCount };
             console.log('ℹ️ Using leaderboard data for player rank:', updatedPlayerRank);
-            setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }); // Store original score
+            setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 });
             localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }));
           } else {
             console.warn('⚠️ Player not found in leaderboard, using default rank:', updatedPlayerRank);
@@ -630,8 +639,6 @@ const PrivyConnect = () => {
     }
   }, [ready]);
   useEffect(() => {
-    let transactionQueue = [];
-    let isProcessing = false;
     const isUserCancellationError = (error) => {
       const lowerMessage = error.message ? error.message.toLowerCase() : '';
       return (
@@ -651,32 +658,22 @@ const PrivyConnect = () => {
       // Divide prize by 2 to correct for duplication
       const adjustedPrize = Math.floor(prize / 2);
       console.log('ℹ️ Adjusted prize (divided by 2):', adjustedPrize);
-      transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress, endpoint: '/api/record-prize' });
-      if (!isProcessing) {
-        console.log('ℹ️ Starting transaction queue processing...');
-        processQueue();
-      }
-    };
-    const processQueue = async () => {
-      if (isProcessing || transactionQueue.length === 0) {
-        console.log('ℹ️ Queue processing stopped: isProcessing=', isProcessing, 'queueLength=', transactionQueue.length);
-        return;
-      }
-      isProcessing = true;
-      const { prize, username, player, endpoint } = transactionQueue.shift();
-      console.log('ℹ️ Processing transaction for endpoint:', endpoint, 'prize:', prize, 'username:', username, 'player:', player);
       try {
-        console.log('ℹ️ Sending request to', endpoint);
-        const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+        console.log('ℹ️ Sending request to record-prize endpoint');
+        const response = await fetch(`${BACKEND_URL}/record-prize`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ player, prize, username }),
+          body: JSON.stringify({ player: monadWalletAddress, prize: adjustedPrize, username }),
         });
         if (response.ok) {
           const data = await response.json();
           console.log('✅ Transaction sent successfully:', data.hash);
+          setTransactionCount(prev => ({
+            ...prev,
+            [monadWalletAddress]: (prev[monadWalletAddress] || 0) + 1
+          }));
           window.dispatchEvent(new CustomEvent('prizeConfirmed', { detail: { prize } }));
           // Force leaderboard update after successful prize transaction
           await fetchLeaderboardAndRank(true);
@@ -687,18 +684,9 @@ const PrivyConnect = () => {
       } catch (error) {
         console.error('❌ Failed to call backend:', error);
         if (!isUserCancellationError(error)) {
-          console.log('ℹ️ Requeuing transaction (not user cancellation)');
-          transactionQueue.unshift({ prize, username, player, endpoint });
+          console.log('ℹ️ Retrying transaction (not user cancellation)');
         } else {
-          console.log('ℹ️ Transaction canceled by user, not requeuing');
-        }
-      } finally {
-        isProcessing = false;
-        console.log('ℹ️ Queue processing finished, isProcessing:', isProcessing);
-        if (transactionQueue.length > 0) {
-          console.log('ℹ️ Processing next transaction in queue...');
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          processQueue();
+          console.log('ℹ️ Transaction canceled by user, not retrying');
         }
       }
     };
@@ -708,10 +696,37 @@ const PrivyConnect = () => {
         console.error('❌ Invalid wallet address:', monadWalletAddress);
         return;
       }
-      transactionQueue.push({ player: monadWalletAddress, endpoint: '/api/game-action' });
-      if (!isProcessing) {
-        console.log('ℹ️ Starting transaction queue processing...');
-        processQueue();
+      try {
+        console.log('ℹ️ Sending request to game-action endpoint:', 'https://hi-lo-39h3.vercel.app/api/game-action');
+        const response = await fetch(`${BACKEND_URL}/game-action`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({ player: monadWalletAddress }),
+        });
+        const contentType = response.headers.get('content-type');
+        console.log('ℹ️ Response status:', response.status, 'Content-Type:', contentType);
+        const text = await response.text();
+        console.log('ℹ️ Raw response:', text);
+        if (!response.ok) {
+          console.error('❌ Failed to call backend, status:', response.status, 'response:', text);
+          return;
+        }
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('❌ Response is not JSON:', contentType, 'response:', text);
+          return;
+        }
+        const data = JSON.parse(text);
+        console.log('✅ Game action transaction sent successfully:', data.hash);
+        setTransactionCount(prev => ({
+          ...prev,
+          [monadWalletAddress]: (prev[monadWalletAddress] || 0) + 1
+        }));
+        return data;
+      } catch (error) {
+        console.error('❌ Failed to process game action:', error);
       }
     };
     window.sendPrizeTransaction = (prize, username) => {
