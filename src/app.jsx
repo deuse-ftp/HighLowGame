@@ -601,7 +601,7 @@ const PrivyConnect = () => {
           console.error('❌ Falha ao obter rank do jogador para', monadWalletAddress, ':', error);
           const playerEntry = leaderboardData.find(entry => entry.player.toLowerCase() === monadWalletAddress.toLowerCase());
           if (playerEntry) {
-            updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(entry.score) };
+            updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score) };
             console.log('ℹ️ Usando dados do leaderboard para rank do jogador:', updatedPlayerRank);
             setPlayerRank(updatedPlayerRank);
             localStorage.setItem('cachedPlayerRank', JSON.stringify(updatedPlayerRank));
@@ -653,7 +653,7 @@ const PrivyConnect = () => {
         console.error('❌ Endereço de carteira inválido:', monadWalletAddress);
         return;
       }
-      const adjustedPrize = prize;
+      const adjustedPrize = prize; // Envia o prêmio completo
       console.log('ℹ️ Prêmio ajustado:', adjustedPrize);
       transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
       if (!isProcessing) {
@@ -671,40 +671,22 @@ const PrivyConnect = () => {
       console.log('ℹ️ Processando transação para prêmio:', prize, 'username:', username, 'player:', player);
       try {
         console.log('ℹ️ Enviando requisição para o endpoint record-prize');
-        const recordPrizeResponse = await fetch(`${BACKEND_URL}/record-prize`, {
+        const response = await fetch(`${BACKEND_URL}/record-prize`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ player, prize, username }),
         });
-        if (!recordPrizeResponse.ok) {
-          const errorData = await recordPrizeResponse.json();
-          console.error('❌ Falha ao chamar record-prize, status:', recordPrizeResponse.status, 'mensagem:', errorData.error);
-          throw new Error(`Failed to call record-prize: ${errorData.error}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Transação enviada com sucesso:', data.hash);
+          window.dispatchEvent(new CustomEvent('prizeConfirmed', { detail: { prize } }));
+          await fetchLeaderboardAndRank(true);
+        } else {
+          const errorData = await response.json();
+          console.error('❌ Falha ao chamar backend, status:', response.status, 'mensagem:', errorData.error);
         }
-        const recordPrizeData = await recordPrizeResponse.json();
-        console.log('✅ Transação record-prize enviada com sucesso:', recordPrizeData.hash);
-
-        // Envia prize / 2 para o endpoint update-leaderboard
-        console.log('ℹ️ Enviando requisição para o endpoint update-leaderboard com score:', Math.floor(prize / 2));
-        const updateLeaderboardResponse = await fetch(`${BACKEND_URL}/update-leaderboard`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ player, score: Math.floor(prize / 2) }),
-        });
-        if (!updateLeaderboardResponse.ok) {
-          const errorData = await updateLeaderboardResponse.json();
-          console.error('❌ Falha ao chamar update-leaderboard, status:', updateLeaderboardResponse.status, 'mensagem:', errorData.error);
-          throw new Error(`Failed to call update-leaderboard: ${errorData.error}`);
-        }
-        const updateLeaderboardData = await updateLeaderboardResponse.json();
-        console.log('✅ Transação update-leaderboard enviada com sucesso:', updateLeaderboardData.hash);
-
-        window.dispatchEvent(new CustomEvent('prizeConfirmed', { detail: { prize } }));
-        await fetchLeaderboardAndRank(true);
       } catch (error) {
         console.error('❌ Falha ao chamar backend:', error);
         if (!isUserCancellationError(error)) {
@@ -730,7 +712,7 @@ const PrivyConnect = () => {
         return;
       }
       try {
-        console.log('ℹ️ Enviando requisição para o endpoint game-action:', `${BACKEND_URL}/game-action`);
+        console.log('ℹ️ Enviando requisição para o endpoint game-action:', 'https://hi-lo-39h3.vercel.app/api/game-action');
         const response = await fetch(`${BACKEND_URL}/game-action`, {
           method: 'POST',
           headers: {
