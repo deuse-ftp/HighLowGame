@@ -27,7 +27,7 @@ const monadTestnet = defineChain({
 });
 
 // Contract address
-const contractAddress = '0xf7Dbb0d64AE8B11276Dd5b29CaDd1621A72F23B4';
+const contractAddress = '0x04860C366B7DB25C087eE170b75d38CC4d50200D';
 
 // ABI for HiLoGameMonadID contract
 const contractABI = [
