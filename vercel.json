@@ -38,8 +38,8 @@
       "dest": "/game/$1"
     },
     {
-      "src": "/styles/(.*)",
-      "dest": "/styles/$1"
+      "src": "/images/(.*)",
+      "dest": "/images/$1"
     },
     {
       "src": "/(.*)",

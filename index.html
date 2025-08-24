@@ -4,65 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HiLo Monad</title>
-    <link rel="stylesheet" href="/public/styles/game.css">
+    <style>
+        /* Estilos da tela inicial */
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #30036D; /* Mesma cor de fundo do jogo */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000; /* Acima de tudo */
+        }
+        #welcome-image {
+            width: min(80vw, 800px);
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+        #play-game-btn {
+            padding: 12px 24px;
+            background: linear-gradient(to bottom, #4CAF50, #388E3C); /* Mesmo estilo do botão PLAY */
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        #play-game-btn:hover {
+            background: linear-gradient(to bottom, #388E3C, #4CAF50);
+        }
+        #game-content {
+            display: none; /* Oculta o jogo por padrão */
+        }
+        /* Responsividade para celular */
+        @media (max-width: 600px) {
+            #welcome-image {
+                width: min(90vw, 400px);
+            }
+            #play-game-btn {
+                font-size: 14px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Monad Testnet</h1>
-    <p>Click PLAY or press Space to play and STOP to save points.</p>
-    <p>You can drag the dashboards.</p>
-    <div id="hilo-container">
-        <div id="card-board">
-            <div id="discard-pile"></div>
-            <div id="current-card" class="card"></div>
-            <div id="next-card" class="card"></div>
+    <div id="welcome-screen">
+        <img id="welcome-image" src="/images/welcome.png" alt="Welcome to HiLo Monad">
+        <button id="play-game-btn">Play Game</button>
+    </div>
+    <div id="game-content">
+        <h1>Monad Testnet</h1>
+        <p>Click PLAY or press Space to play and STOP to save points.</p>
+        <p>You can drag the dashboards.</p>
+        <div id="hilo-container">
+            <div id="card-board">
+                <div id="discard-pile"></div>
+                <div id="current-card" class="card"></div>
+                <div id="next-card" class="card"></div>
+            </div>
         </div>
-    </div>
-    <div id="probabilities"></div>
-    <div id="connect-wallet-message">
-        <p>Connect your wallet</p>
-    </div>
-    <div id="total-points-message">
-        <div class="points-message-content">
-            <p>Total Points: 0 points</p>
-            <button class="close-points-btn">X</button>
+        <div id="probabilities"></div>
+        <div id="connect-wallet-message">
+            <p>Connect your wallet</p>
         </div>
-    </div>
-    <div id="game-over-message">
-        <div class="points-message-content">
-            <p id="game-over-text">Game Over! You lost all session points.</p>
-            <button class="close-game-over-btn">X</button>
+        <div id="total-points-message">
+            <div class="points-message-content">
+                <p>Total Points: 0 points</p>
+                <button class="close-points-btn">X</button>
+            </div>
         </div>
-    </div>
-    <div id="segment-counts-message">
-        <div class="segment-counts-content">
-            <ul id="segment-counts-list"></ul>
-            <button class="close-segment-counts-btn">X</button>
+        <div id="game-over-message">
+            <div class="points-message-content">
+                <p id="game-over-text">Game Over! You lost all session points.</p>
+                <button class="close-game-over-btn">X</button>
+            </div>
         </div>
-    </div>
-    <div id="leaderboard-message">
-        <div class="leaderboard-content">
-            <ul id="leaderboard-list"></ul>
-            <button class="close-leaderboard-btn">X</button>
+        <div id="segment-counts-message">
+            <div class="segment-counts-content">
+                <ul id="segment-counts-list"></ul>
+                <button class="close-segment-counts-btn">X</button>
+            </div>
         </div>
-    </div>
-    <div id="payout-container">
-        <button id="play-btn">PLAY</button>
-        <button id="higher-btn">Higher</button>
-        <button id="lower-btn">Lower</button>
-        <button id="skip-btn">Skip Card</button>
-        <button id="stop-btn">STOP</button>
-    </div>
-    <div id="log-container">
-        <h3 class="drag-handle">Play History</h3>
-        <button id="total-points-btn">View Total Points</button>
-        <button id="segment-counts-btn">View Game History</button>
-        <button id="leaderboard-btn">Leaderboard</button>
-        <ul id="log-list"></ul>
+        <div id="leaderboard-message">
+            <div class="leaderboard-content">
+                <ul id="leaderboard-list"></ul>
+                <button class="close-leaderboard-btn">X</button>
+            </div>
+        </div>
+        <div id="payout-container">
+            <button id="play-btn">PLAY</button>
+            <button id="higher-btn">Higher</button>
+            <button id="lower-btn">Lower</button>
+            <button id="skip-btn">Skip Card</button>
+            <button id="stop-btn">STOP</button>
+        </div>
+        <div id="log-container">
+            <h3 class="drag-handle">Play History</h3>
+            <button id="total-points-btn">View Total Points</button>
+            <button id="segment-counts-btn">View Game History</button>
+            <button id="leaderboard-btn">Leaderboard</button>
+            <ul id="log-list"></ul>
+        </div>
     </div>
     <script src="/game/variables.js"></script>
     <script src="/game/preload-functions.js"></script>
     <script src="/game/setup.js"></script>
     <script src="/game/game.js"></script>
     <script type="module" src="/src/app.jsx"></script>
+    <script>
+        // Script para controlar a tela inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const gameContent = document.getElementById('game-content');
+            const playGameBtn = document.getElementById('play-game-btn');
+
+            playGameBtn.addEventListener('click', () => {
+                welcomeScreen.style.display = 'none';
+                gameContent.style.display = 'block';
+            });
+        });
+    </script>
 </body>
 </html>
