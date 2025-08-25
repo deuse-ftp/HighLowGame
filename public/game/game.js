@@ -3,49 +3,8 @@ try {
     size = Math.min(window.innerWidth * 0.9, 400);
     window.addEventListener('resize', () => {
         size = Math.min(window.innerWidth * 0.9, 400);
-        if (logContainer) {
-            const hiloContainer = document.getElementById('hilo-container');
-            const hiloRect = hiloContainer.getBoundingClientRect();
-            if (window.innerWidth > 600) {
-                if (!isDragging) {
-                    currentX = hiloRect.left - 290;
-                    logContainer.style.left = `${currentX}px`;
-                    logContainer.style.top = '202px';
-                    logContainer.style.bottom = 'auto';
-                    logContainer.style.margin = '0';
-                    logContainer.style.position = 'absolute';
-                }
-            } else {
-                if (!isDragging) {
-                    currentX = 0;
-                    currentY = 0;
-                    logContainer.style.left = 'auto';
-                    logContainer.style.top = 'auto';
-                    logContainer.style.bottom = 'auto';
-                    logContainer.style.margin = '20px auto';
-                    logContainer.style.position = 'relative';
-                }
-            }
-            // Ajustar points-panel no resize
-            const pointsPanel = document.getElementById('points-panel');
-            if (pointsPanel) {
-                if (window.innerWidth > 600) {
-                    pointsPanel.style.position = 'absolute';
-                    const hiloRect = hiloContainer.getBoundingClientRect();
-                    pointsPanel.style.left = `${hiloRect.right + 10}px`;
-                    pointsPanel.style.top = '202px';
-                } else {
-                    pointsPanel.style.position = 'relative';
-                    pointsPanel.style.left = 'auto';
-                    pointsPanel.style.top = 'auto';
-                    pointsPanel.style.bottom = 'auto';
-                    pointsPanel.style.margin = '20px auto';
-                }
-            }
-        }
     });
     function updateSessionPoints() {
-        // Use toFixed(2) to avoid floating-point precision issues
         const multiplierDiff = Number((sessionMultiplier - 1).toFixed(2));
         sessionPoints = Math.max(0, Math.round(100 * multiplierDiff));
         console.log(`ℹ️ Updating session points: multiplier=${sessionMultiplier}, diff=${multiplierDiff}, points=${sessionPoints}`);
@@ -65,7 +24,7 @@ try {
         discardCard.className = 'discard-card';
         const rankDisplay = rankDisplayMap[card.rank] || card.rank;
         const suitDisplay = suitDisplayMap[card.suit];
-        discardCard.innerHTML = `<img src="${card.image}" alt="${rankDisplay} de ${suitDisplay}" style="width:50px; height:75px; object-fit: cover;">`;
+        discardCard.innerHTML = `<img src="${card.image}" alt="${rankDisplay} de ${suitDisplay}" style="width:100%; height:100%; object-fit: cover;">`;
         discardPile.appendChild(discardCard);
         while (discardPile.children.length > 5) {
             discardPile.removeChild(discardPile.firstChild);
@@ -81,7 +40,7 @@ try {
         sessionPoints = 0;
         greenStreak = 0;
         gameHistory = [];
-        document.getElementById('points-list').innerHTML = ''; // Limpar pontos no início da rodada
+        document.getElementById('points-list').innerHTML = '';
         document.getElementById('next-card').style.display = 'none';
         document.getElementById('discard-pile').innerHTML = '';
         const currentCardElem = document.getElementById('current-card');
@@ -95,9 +54,14 @@ try {
         const stopBtn = document.getElementById('stop-btn');
         const playBtn = document.getElementById('play-btn');
         playBtn.disabled = true;
+        playBtn.style.display = 'none'; // Ocultar Play durante a partida
         higherBtn.disabled = false;
         lowerBtn.disabled = false;
         stopBtn.disabled = false;
+        // Mostrar botões Stop, Lower e Higher
+        higherBtn.style.display = 'inline-block';
+        lowerBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'inline-block';
     }
     function updateProbabilities(rank) {
         const probHi = ((13 - rank) / 13 * 100).toFixed(0);
@@ -131,10 +95,15 @@ try {
         const playBtn = document.getElementById('play-btn');
         const skipBtn = document.getElementById('skip-btn');
         playBtn.disabled = false;
+        playBtn.style.display = 'inline-block'; // Mostrar Play quando a partida termina
         higherBtn.disabled = true;
         lowerBtn.disabled = true;
         stopBtn.disabled = true;
-        skipBtn.style.display = 'block';
+        // Ocultar botões Stop, Lower e Higher
+        higherBtn.style.display = 'none';
+        lowerBtn.style.display = 'none';
+        stopBtn.style.display = 'none';
+        skipBtn.style.display = 'inline-block';
         drawInitialCard();
         if (document.getElementById('total-points-message').style.display === 'block') {
             toggleTotalPointsMessage(true);
@@ -177,14 +146,12 @@ try {
         }, 10);
         console.log(`Carta atual: ${currentCard.rank} (rank ${rank}), Próxima: ${nextCard.rank} (rank ${nextRank}), Aposta: ${guess}`);
         if (nextRank === rank) {
-            // Special case: Loss only if Ace with "higher" or King with "lower" and same rank
             if ((rank === 1 && guess === 'higher') || (rank === 13 && guess === 'lower')) {
                 result = 'RED';
                 setTimeout(() => {
                     endGame(false);
                 }, 400);
             } else {
-                // If same rank but not Ace/higher or King/lower, draw a new card with different suit
                 while (nextCard.suit === currentCard.suit) {
                     nextCard.suit = suits[Math.floor(Math.random() * suits.length)];
                 }

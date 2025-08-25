@@ -68,15 +68,15 @@ body {
 #discard-pile {
     position: absolute;
     top: 10px;
-    left: calc(50% + min(400px, 90vw) / 2 + 50px); /* Movido para a direita */
+    left: calc(50% + min(400px, 90vw) / 2 + 50px);
     display: flex;
     flex-direction: row;
     gap: 10px;
     z-index: 5;
 }
 .discard-card {
-    width: 60px; /* Aumentado de 50px */
-    height: 90px; /* Aumentado de 75px */
+    width: 60px;
+    height: 90px;
     display: inline-block;
 }
 #probabilities {
@@ -497,7 +497,7 @@ body {
 }
 #payout-container {
     position: absolute;
-    top: calc(min(550px, 90vw) + 2em + 20px);
+    top: 500px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -532,9 +532,11 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 125px;
-    height: 50px;
-    margin: 0 5px;
+    position: absolute; /* Independente do fluxo do payout-container */
+    left: 20px; /* Posição inicial */
+    top: 0;
+    width: 180px; /* Tamanho aumentado */
+    height: 100px; /* Tamanho aumentado */
     border: none;
     border-radius: 0;
     color: transparent;
@@ -552,16 +554,18 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 125px;
-    height: 50px;
-    margin: 0 5px;
+    position: absolute;
+    left: 45px; /* Ajustado para evitar sobreposição */
+    top: 0;
+    width: 180px; /* Tamanho aumentado */
+    height: 70px; /* Tamanho aumentado */
     border: none;
     border-radius: 0;
     color: transparent;
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    display: inline-block;
+    display: none;
 }
 #higher-btn:hover {
     opacity: 0.8;
@@ -572,16 +576,18 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 125px;
-    height: 50px;
-    margin: 0 5px;
+    position: absolute;
+    left: 160px; /* Ajustado para evitar sobreposição */
+    top: 0;
+    width: 180px; /* Tamanho aumentado */
+    height: 70px; /* Tamanho aumentado */
     border: none;
     border-radius: 0;
     color: transparent;
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    display: inline-block;
+    display: none;
 }
 #lower-btn:hover {
     opacity: 0.8;
@@ -592,9 +598,11 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 125px;
-    height: 50px;
-    margin: 0 5px;
+    position: absolute; /* Independente do fluxo do payout-container */
+    left: 200px; /* Posição inicial */
+    top: 0;
+    width: 150px; /* Tamanho aumentado */
+    height: 60px; /* Tamanho aumentado */
     border: none;
     border-radius: 0;
     color: transparent;
@@ -612,16 +620,18 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 125px;
-    height: 50px;
-    margin: 0 5px;
+    position: absolute;
+    left: 260px; /* Ajustado para evitar sobreposição */
+    top: 0;
+    width: 180px; /* Tamanho aumentado */
+    height: 70px; /* Tamanho aumentado */
     border: none;
     border-radius: 0;
     color: transparent;
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    display: inline-block;
+    display: none;
 }
 #stop-btn:hover {
     opacity: 0.8;
@@ -656,14 +666,14 @@ body {
     #discard-pile {
         position: absolute;
         top: 10px;
-        left: 50px; /* Movido para a direita em mobile */
+        left: 50px;
         display: flex;
         flex-direction: row;
         gap: 10px;
         z-index: 5;
     }
     .discard-card {
-        width: 50px; /* Tamanho menor em mobile para consistência */
+        width: 50px;
         height: 75px;
         display: inline-block;
     }
@@ -682,6 +692,15 @@ body {
         width: 100px;
         height: 50px;
         font-size: 0;
+    }
+    #higher-btn, #lower-btn, #stop-btn {
+        display: none;
+    }
+    #higher-btn, #lower-btn {
+        margin: 0 5px 0 10px;
+    }
+    #play-btn, #skip-btn {
+        display: inline-block;
     }
     #payout-container {
         position: absolute;
