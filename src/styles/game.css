@@ -1,17 +1,3 @@
-Desculpe pelo erro, cara! Eu não deveria ter mexido no `width` do `#payout-container`. Vou corrigir isso, voltando o `width` para `min(400px, 90vw)` em desktops e manter o mesmo no media query para telas menores, como estava originalmente. Além disso, vou ajustar o CSS dos botões (`#play-btn`, `#higher-btn`, `#lower-btn`, `#skip-btn`, `#stop-btn`) para que o fundo seja transparente, mantendo as imagens (`play.png`, `higher.png`, `lower.png`, `skipcard.png`, `stop.png`) visíveis no tamanho natural. Abaixo está o `src/styles/game.css` completo com essas correções.
-
-### Mudanças Realizadas
-- **Revertido o `width` do `#payout-container`**:
-  - Voltei para `width: min(400px, 90vw)` em desktops e no media query, como estava originalmente, para evitar alterações no layout geral.
-- **Fundo Transparente nos Botões**:
-  - Adicionei `background-color: transparent` aos botões para garantir que o fundo seja transparente, mantendo apenas as imagens visíveis.
-  - Mantive `background-size: contain`, `background-position: center`, `background-repeat: no-repeat`, `width: 100px`, `height: 40px` (e `80px`, `32px` no media query) para exibir as imagens no tamanho natural.
-  - Mantive `display: inline-block`, `color: transparent`, `font-size: 0`, `padding: 0`, e `border-radius: 0` para garantir que apenas as imagens sejam exibidas.
-- **Outras Partes Intactas**:
-  - Não alterei outras seções do CSS (ex.: `#log-container`, `.card`, etc.) para preservar o resto do layout.
-
-### Novo `game.css`
-```css
 body {
     font-family: sans-serif;
     text-align: center;
@@ -572,4 +558,3 @@ body {
         transform-origin: right center;
     }
 }
-```
