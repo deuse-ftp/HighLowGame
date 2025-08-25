@@ -318,6 +318,7 @@ body {
 .close-leaderboard-btn:hover {
     background: #836EF9;
 }
+
 #log-container {
     position: absolute !important;
     top: 202px;
@@ -325,7 +326,9 @@ body {
     width: 200px !important;
     height: 200px !important;
     overflow-y: auto !important;
-    background: #1e1a2a !important;
+    background-image: url('/images/painel-esquerdo.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
     border: 1px solid #836EF9 !important;
     border-radius: 12px !important;
     padding: 15px !important;
@@ -337,6 +340,7 @@ body {
     cursor: grab;
     will-change: left, top;
 }
+
 #log-container::-webkit-scrollbar {
     width: 8px;
 }
