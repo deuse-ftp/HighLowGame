@@ -330,9 +330,63 @@ body {
 .close-leaderboard-btn:hover {
     background: #836EF9;
 }
+#points-panel {
+    position: absolute !important;
+    top: 423px !important;
+    left: calc(47% + min(400px, 90vw) / 2 + 130px) !important;
+    width: 234px !important;
+    height: 234px !important;
+    overflow-y: auto !important;
+    background-image: url('/images/points-panel.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border: 1px solid #836EF9 !important;
+    border-radius: 12px !important;
+    padding: 15px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    z-index: 15 !important;
+}
+#points-panel::-webkit-scrollbar {
+    width: 8px;
+}
+#points-panel::-webkit-scrollbar-track {
+    background: #30036D;
+    border-radius: 4px;
+}
+#points-panel::-webkit-scrollbar-thumb {
+    background: #836EF9;
+    border-radius: 4px;
+}
+#points-panel::-webkit-scrollbar-thumb:hover {
+    background: #5B4FC0;
+}
+#points-panel h3.drag-handle {
+    font-size: 12px;
+    margin: 0 0 10px 0;
+    color: white;
+    user-select: none;
+    padding: 5px;
+}
+#points-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 10px;
+    color: white;
+    flex: 1;
+}
+#points-list li {
+    margin-bottom: 8px;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
 #log-container {
     position: absolute !important;
-    top: 202px;
+    top: 263px !important;
     left: calc(50% - min(400px, 90vw) / 2 - 290px);
     width: 234px !important;
     height: 234px !important;
@@ -348,8 +402,6 @@ body {
     flex-direction: column !important;
     gap: 10px !important;
     z-index: 15 !important;
-    cursor: grab;
-    will-change: left, top;
 }
 #log-container::-webkit-scrollbar {
     width: 8px;
@@ -371,9 +423,6 @@ body {
     color: white;
     user-select: none;
     padding: 5px;
-}
-#log-container h3.drag-handle:active {
-    cursor: grabbing;
 }
 #log-list {
     list-style: none;
@@ -586,13 +635,28 @@ body {
     }
     #log-container {
         position: relative !important;
-        top: 140px !important;
+        top: 130px !important;
         left: auto !important;
         margin: 20px auto !important;
         width: min(276px, 91.52vw) !important;
+        height: 235px !important;
+    }
+    #points-panel {
+        position: relative !important;
+        top: 140px !important;
+        left: auto !important;
+        margin: 10px auto 20px auto !important;
+        width: min(276px, 91.52vw) !important;
         height: 250px !important;
+        display: flex !important;
+        background-image: url('/images/points-panel.png') !important;
+        background-size: cover !important;
+        background-position: center !important;
     }
     #log-list {
+        font-size: 9px;
+    }
+    #points-list {
         font-size: 9px;
     }
     #total-points-btn, #segment-counts-btn, #leaderboard-btn {
@@ -606,8 +670,8 @@ body {
         font-size: 0;
     }
     #payout-container {
-        position: absolute; /* Alterado para absolute em mobile */
-        top: calc(min(550px, 135vw) + 2em + 20px); 
+        position: absolute;
+        top: calc(min(550px, 135vw) + 2em + 20px);
         left: 50%;
         transform: translateX(-50%);
         width: min(360px, 110vw);

@@ -26,6 +26,22 @@ try {
                     logContainer.style.position = 'relative';
                 }
             }
+            // Ajustar points-panel no resize
+            const pointsPanel = document.getElementById('points-panel');
+            if (pointsPanel) {
+                if (window.innerWidth > 600) {
+                    pointsPanel.style.position = 'absolute';
+                    const hiloRect = hiloContainer.getBoundingClientRect();
+                    pointsPanel.style.left = `${hiloRect.right + 10}px`;
+                    pointsPanel.style.top = '202px';
+                } else {
+                    pointsPanel.style.position = 'relative';
+                    pointsPanel.style.left = 'auto';
+                    pointsPanel.style.top = 'auto';
+                    pointsPanel.style.bottom = 'auto';
+                    pointsPanel.style.margin = '20px auto';
+                }
+            }
         }
     });
     function updateSessionPoints() {
@@ -33,11 +49,11 @@ try {
         const multiplierDiff = Number((sessionMultiplier - 1).toFixed(2));
         sessionPoints = Math.max(0, Math.round(100 * multiplierDiff));
         console.log(`ℹ️ Updating session points: multiplier=${sessionMultiplier}, diff=${multiplierDiff}, points=${sessionPoints}`);
-        const logList = document.getElementById('log-list');
-        if (logList) {
-            const logItem = document.createElement('li');
-            logItem.textContent = `Points: ${sessionPoints} (x${sessionMultiplier.toFixed(2)})`;
-            logList.insertBefore(logItem, logList.firstChild);
+        const pointsList = document.getElementById('points-list');
+        if (pointsList) {
+            const pointItem = document.createElement('li');
+            pointItem.textContent = `Points: ${sessionPoints} (x${sessionMultiplier.toFixed(2)})`;
+            pointsList.insertBefore(pointItem, pointsList.firstChild);
         }
         if (document.getElementById('total-points-message').style.display === 'block') {
             toggleTotalPointsMessage(true);
@@ -65,7 +81,7 @@ try {
         sessionPoints = 0;
         greenStreak = 0;
         gameHistory = [];
-        document.getElementById('log-list').innerHTML = '';
+        document.getElementById('points-list').innerHTML = ''; // Limpar pontos no início da rodada
         document.getElementById('next-card').style.display = 'none';
         document.getElementById('discard-pile').innerHTML = '';
         const currentCardElem = document.getElementById('current-card');
