@@ -26,18 +26,23 @@
             margin-bottom: 20px;
         }
         #play-game-btn {
-            padding: 12px 24px;
-            background: linear-gradient(to bottom, #4CAF50, #388E3C);
+            background-image: url('/images/play-game.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            width: 150px; /* Ajuste conforme o tamanho natural da imagem */
+            height: 50px; /* Ajuste conforme o tamanho natural da imagem */
             border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 0;
+            color: transparent;
+            font-size: 0;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: opacity 0.3s;
+            display: inline-block;
         }
         #play-game-btn:hover {
-            background: linear-gradient(to bottom, #388E3C, #4CAF50);
+            opacity: 0.8;
         }
         #game-content {
             display: none;
@@ -47,8 +52,9 @@
                 width: min(90vw, 400px);
             }
             #play-game-btn {
-                font-size: 14px;
-                padding: 10px 20px;
+                width: 120px; /* Tamanho menor para telas pequenas */
+                height: 40px;
+                font-size: 0;
             }
         }
     </style>

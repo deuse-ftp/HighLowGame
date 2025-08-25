@@ -504,6 +504,28 @@ body {
     margin-right: auto;
     z-index: 10;
 }
+.logout-btn {
+    background-image: url('/images/sign-out.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 8px;
+    color: transparent;
+    font-size: 0;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logout-btn:hover {
+    opacity: 0.8;
+}
 @media (max-width: 600px) {
     h1 {
         font-size: 24px;
@@ -556,5 +578,8 @@ body {
     }
     #next-card {
         transform-origin: right center;
+    }
+    .logout-btn {
+        padding: 8px;
     }
 }
