@@ -398,7 +398,8 @@ body {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 0;
+    width: 100px; /* Ajuste conforme o tamanho natural da imagem */
+    height: 40px; /* Ajuste conforme o tamanho natural da imagem */
     margin: 0 5px;
     border: none;
     border-radius: 0;
@@ -406,8 +407,6 @@ body {
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    width: auto;
-    height: auto;
     display: inline-block;
 }
 #play-btn:hover {
@@ -418,7 +417,8 @@ body {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 0;
+    width: 100px; /* Ajuste conforme o tamanho natural da imagem */
+    height: 40px; /* Ajuste conforme o tamanho natural da imagem */
     margin: 0 5px;
     border: none;
     border-radius: 0;
@@ -426,8 +426,6 @@ body {
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    width: auto;
-    height: auto;
     display: inline-block;
 }
 #higher-btn:hover {
@@ -438,7 +436,8 @@ body {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 0;
+    width: 100px; /* Ajuste conforme o tamanho natural da imagem */
+    height: 40px; /* Ajuste conforme o tamanho natural da imagem */
     margin: 0 5px;
     border: none;
     border-radius: 0;
@@ -446,8 +445,6 @@ body {
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    width: auto;
-    height: auto;
     display: inline-block;
 }
 #lower-btn:hover {
@@ -458,7 +455,8 @@ body {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 0;
+    width: 100px; /* Ajuste conforme o tamanho natural da imagem */
+    height: 40px; /* Ajuste conforme o tamanho natural da imagem */
     margin: 0 5px;
     border: none;
     border-radius: 0;
@@ -466,8 +464,6 @@ body {
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    width: auto;
-    height: auto;
     display: inline-block;
 }
 #skip-btn:hover {
@@ -478,7 +474,8 @@ body {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    padding: 0;
+    width: 100px; /* Ajuste conforme o tamanho natural da imagem */
+    height: 40px; /* Ajuste conforme o tamanho natural da imagem */
     margin: 0 5px;
     border: none;
     border-radius: 0;
@@ -486,8 +483,6 @@ body {
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    width: auto;
-    height: auto;
     display: inline-block;
 }
 #stop-btn:hover {
@@ -499,7 +494,7 @@ body {
     justify-content: center;
     align-items: center;
     margin-top: 120px;
-    width: min(400px, 90vw);
+    width: min(600px, 90vw); /* Aumentado para acomodar botões */
     margin-left: auto;
     margin-right: auto;
     z-index: 10;
@@ -526,11 +521,13 @@ body {
         font-size: 9px;
     }
     #play-btn, #higher-btn, #lower-btn, #stop-btn, #skip-btn {
+        width: 80px; /* Tamanho menor para telas pequenas */
+        height: 32px;
         font-size: 0;
-        padding: 0;
     }
     #payout-container {
         margin-top: 120px;
+        width: min(500px, 90vw); /* Ajustado para telas menores */
     }
     .points-message-content p {
         font-size: 16px;
