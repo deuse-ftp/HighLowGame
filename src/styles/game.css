@@ -68,15 +68,15 @@ body {
 #discard-pile {
     position: absolute;
     top: 10px;
-    left: 10px;
+    left: calc(50% + min(400px, 90vw) / 2 + 50px); /* Movido para a direita */
     display: flex;
     flex-direction: row;
     gap: 10px;
     z-index: 5;
 }
 .discard-card {
-    width: 50px;
-    height: 75px;
+    width: 60px; /* Aumentado de 50px */
+    height: 90px; /* Aumentado de 75px */
     display: inline-block;
 }
 #probabilities {
@@ -652,6 +652,20 @@ body {
         background-image: url('/images/points-panel.png') !important;
         background-size: cover !important;
         background-position: center !important;
+    }
+    #discard-pile {
+        position: absolute;
+        top: 10px;
+        left: 50px; /* Movido para a direita em mobile */
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        z-index: 5;
+    }
+    .discard-card {
+        width: 50px; /* Tamanho menor em mobile para consistência */
+        height: 75px;
+        display: inline-block;
     }
     #log-list {
         font-size: 9px;
