@@ -394,7 +394,7 @@ body {
     background: linear-gradient(to bottom, #5B4FC0, #836EF9);
 }
 #play-btn {
-    background-image: url('/images/Play.png') !important;
+    background-image: url('/images/play.png') !important;
     background-size: cover !important;
     background-position: center !important;
     padding: 12px 16px;
@@ -408,10 +408,10 @@ body {
     transition: background 0.3s;
 }
 #play-btn:hover {
-    background-image: url('/images/Play.png') !important;
+    background-image: url('/images/play.png') !important;
 }
 #higher-btn {
-    background-image: url('/images/Higher.png') !important;
+    background-image: url('/images/higher.png') !important;
     background-size: cover !important;
     background-position: center !important;
     padding: 12px 16px;
@@ -425,10 +425,10 @@ body {
     transition: background 0.3s;
 }
 #higher-btn:hover {
-    background-image: url('/images/Higher.png') !important;
+    background-image: url('/images/higher.png') !important;
 }
 #lower-btn {
-    background-image: url('/images/Lower.png') !important;
+    background-image: url('/images/lower.png') !important;
     background-size: cover !important;
     background-position: center !important;
     padding: 12px 16px;
@@ -442,10 +442,10 @@ body {
     transition: background 0.3s;
 }
 #lower-btn:hover {
-    background-image: url('/images/Lower.png') !important;
+    background-image: url('/images/lower.png') !important;
 }
 #skip-btn {
-    background-image: url('/images/SkipCard.png') !important;
+    background-image: url('/images/skipcard.png') !important;
     background-size: cover !important;
     background-position: center !important;
     padding: 12px 16px;
@@ -459,10 +459,10 @@ body {
     transition: background 0.3s;
 }
 #skip-btn:hover {
-    background-image: url('/images/SkipCard.png') !important;
+    background-image: url('/images/skipcard.png') !important;
 }
 #stop-btn {
-    background-image: url('/images/Stop.png') !important;
+    background-image: url('/images/stop.png') !important;
     background-size: cover !important;
     background-position: center !important;
     padding: 12px 16px;
@@ -476,7 +476,7 @@ body {
     transition: background 0.3s;
 }
 #stop-btn:hover {
-    background-image: url('/images/Stop.png') !important;
+    background-image: url('/images/stop.png') !important;
 }
 #payout-container {
     position: relative;
