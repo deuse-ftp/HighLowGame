@@ -397,6 +397,7 @@ body {
     background-image: url('/images/play.png');
     background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
     padding: 0;
     margin: 0 5px;
     border: none;
@@ -407,6 +408,7 @@ body {
     transition: opacity 0.3s;
     width: auto;
     height: auto;
+    display: inline-block;
 }
 #play-btn:hover {
     opacity: 0.8;
@@ -415,6 +417,7 @@ body {
     background-image: url('/images/higher.png');
     background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
     padding: 0;
     margin: 0 5px;
     border: none;
@@ -425,6 +428,7 @@ body {
     transition: opacity 0.3s;
     width: auto;
     height: auto;
+    display: inline-block;
 }
 #higher-btn:hover {
     opacity: 0.8;
@@ -433,6 +437,7 @@ body {
     background-image: url('/images/lower.png');
     background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
     padding: 0;
     margin: 0 5px;
     border: none;
@@ -443,6 +448,7 @@ body {
     transition: opacity 0.3s;
     width: auto;
     height: auto;
+    display: inline-block;
 }
 #lower-btn:hover {
     opacity: 0.8;
@@ -451,6 +457,7 @@ body {
     background-image: url('/images/skipcard.png');
     background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
     padding: 0;
     margin: 0 5px;
     border: none;
@@ -461,6 +468,7 @@ body {
     transition: opacity 0.3s;
     width: auto;
     height: auto;
+    display: inline-block;
 }
 #skip-btn:hover {
     opacity: 0.8;
@@ -469,6 +477,7 @@ body {
     background-image: url('/images/stop.png');
     background-size: contain;
     background-position: center;
+    background-repeat: no-repeat;
     padding: 0;
     margin: 0 5px;
     border: none;
@@ -479,6 +488,7 @@ body {
     transition: opacity 0.3s;
     width: auto;
     height: auto;
+    display: inline-block;
 }
 #stop-btn:hover {
     opacity: 0.8;
