@@ -157,6 +157,11 @@ body {
     font-weight: bold;
     text-align: center;
 }
+.points-message-content img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
 .close-points-btn, .close-game-over-btn {
     position: absolute;
     top: 10px;
@@ -322,8 +327,8 @@ body {
     position: absolute !important;
     top: 202px;
     left: calc(50% - min(400px, 90vw) / 2 - 290px);
-    width: 200px !important;
-    height: 200px !important;
+    width: 234px !important;
+    height: 234px !important;
     overflow-y: auto !important;
     background-image: url('/images/painel-esquerdo.png') !important;
     background-size: cover !important;
@@ -377,120 +382,61 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
 }
-#total-points-btn, #segment-counts-btn, #leaderboard-btn {
+#total-points-btn {
+    background-image: url('/images/view-total-points.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
     width: 100%;
-    padding: 8px;
+    height: 65px;
     margin-bottom: 10px;
-    background: linear-gradient(to bottom, #836EF9, #5B4FC0);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-size: 10px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-#total-points-btn:hover, #segment-counts-btn:hover, #leaderboard-btn:hover {
-    background: linear-gradient(to bottom, #5B4FC0, #836EF9);
-}
-#play-btn {
-    background-image: url('/images/play.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: transparent;
-    width: 100px;
-    height: 40px;
-    margin: 0 5px;
     border: none;
     border-radius: 0;
     color: transparent;
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    display: inline-block;
 }
-#play-btn:hover {
+#total-points-btn:hover {
     opacity: 0.8;
 }
-#higher-btn {
-    background-image: url('/images/higher.png');
+#segment-counts-btn {
+    background-image: url('/images/view-game-history.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 100px;
-    height: 40px;
-    margin: 0 5px;
+    width: 100%;
+    height: 65px;
+    margin-bottom: 10px;
     border: none;
     border-radius: 0;
     color: transparent;
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    display: inline-block;
 }
-#higher-btn:hover {
+#segment-counts-btn:hover {
     opacity: 0.8;
 }
-#lower-btn {
-    background-image: url('/images/lower.png');
+#leaderboard-btn {
+    background-image: url('/images/leaderboard.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 100px;
-    height: 40px;
-    margin: 0 5px;
+    width: 100%;
+    height: 65px;
+    margin-bottom: 10px;
     border: none;
     border-radius: 0;
     color: transparent;
     font-size: 0;
     cursor: pointer;
     transition: opacity 0.3s;
-    display: inline-block;
 }
-#lower-btn:hover {
-    opacity: 0.8;
-}
-#skip-btn {
-    background-image: url('/images/skipcard.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: transparent;
-    width: 100px;
-    height: 40px;
-    margin: 0 5px;
-    border: none;
-    border-radius: 0;
-    color: transparent;
-    font-size: 0;
-    cursor: pointer;
-    transition: opacity 0.3s;
-    display: inline-block;
-}
-#skip-btn:hover {
-    opacity: 0.8;
-}
-#stop-btn {
-    background-image: url('/images/stop.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: transparent;
-    width: 100px;
-    height: 40px;
-    margin: 0 5px;
-    border: none;
-    border-radius: 0;
-    color: transparent;
-    font-size: 0;
-    cursor: pointer;
-    transition: opacity 0.3s;
-    display: inline-block;
-}
-#stop-btn:hover {
+#leaderboard-btn:hover {
     opacity: 0.8;
 }
 #payout-container {
@@ -510,8 +456,8 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 100px;
-    height: 40px;
+    width: 140px;
+    height: 65px;
     margin: 0 5px;
     border: none;
     border-radius: 0;
@@ -522,6 +468,106 @@ body {
     display: inline-block;
 }
 .logout-btn:hover {
+    opacity: 0.8;
+}
+#play-btn {
+    background-image: url('/images/play.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: 125px;
+    height: 50px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 0;
+    color: transparent;
+    font-size: 0;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    display: inline-block;
+}
+#play-btn:hover {
+    opacity: 0.8;
+}
+#higher-btn {
+    background-image: url('/images/higher.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: 125px;
+    height: 50px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 0;
+    color: transparent;
+    font-size: 0;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    display: inline-block;
+}
+#higher-btn:hover {
+    opacity: 0.8;
+}
+#lower-btn {
+    background-image: url('/images/lower.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: 125px;
+    height: 50px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 0;
+    color: transparent;
+    font-size: 0;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    display: inline-block;
+}
+#lower-btn:hover {
+    opacity: 0.8;
+}
+#skip-btn {
+    background-image: url('/images/skipcard.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: 125px;
+    height: 50px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 0;
+    color: transparent;
+    font-size: 0;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    display: inline-block;
+}
+#skip-btn:hover {
+    opacity: 0.8;
+}
+#stop-btn {
+    background-image: url('/images/stop.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: 125px;
+    height: 50px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 0;
+    color: transparent;
+    font-size: 0;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    display: inline-block;
+}
+#stop-btn:hover {
     opacity: 0.8;
 }
 @media (max-width: 600px) {
@@ -536,18 +582,20 @@ body {
         top: auto !important;
         left: auto !important;
         margin: 20px auto !important;
-        width: min(200px, 64vw) !important;
-        height: 150px !important;
+        width: min(286px, 91.52vw) !important;
+        height: 215px !important;
     }
     #log-list {
         font-size: 9px;
     }
     #total-points-btn, #segment-counts-btn, #leaderboard-btn {
-        font-size: 9px;
+        width: 100%;
+        height: 52px;
+        font-size: 0;
     }
     #play-btn, #higher-btn, #lower-btn, #stop-btn, #skip-btn {
-        width: 80px;
-        height: 32px;
+        width: 100px;
+        height: 40px;
         font-size: 0;
     }
     #payout-container {
@@ -578,7 +626,7 @@ body {
         transform-origin: right center;
     }
     .logout-btn {
-        width: 80px;
-        height: 32px;
+        width: 140px;
+        height: 52px;
     }
 }
