@@ -1,3 +1,4 @@
+```css
 body {
     font-family: sans-serif;
     text-align: center;
@@ -394,89 +395,94 @@ body {
     background: linear-gradient(to bottom, #5B4FC0, #836EF9);
 }
 #play-btn {
-    background-image: url('/images/play.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    padding: 12px 16px;
+    background-image: url('/images/play.png');
+    background-size: contain;
+    background-position: center;
+    padding: 0;
     margin: 0 5px;
     border: none;
-    border-radius: 8px;
+    border-radius: 0;
     color: transparent;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 0;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: opacity 0.3s;
+    width: auto;
+    height: auto;
 }
 #play-btn:hover {
-    background-image: url('/images/play.png') !important;
+    opacity: 0.8;
 }
 #higher-btn {
-    background-image: url('/images/higher.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    padding: 12px 16px;
+    background-image: url('/images/higher.png');
+    background-size: contain;
+    background-position: center;
+    padding: 0;
     margin: 0 5px;
     border: none;
-    border-radius: 8px;
+    border-radius: 0;
     color: transparent;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 0;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: opacity 0.3s;
+    width: auto;
+    height: auto;
 }
 #higher-btn:hover {
-    background-image: url('/images/higher.png') !important;
+    opacity: 0.8;
 }
 #lower-btn {
-    background-image: url('/images/lower.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    padding: 12px 16px;
+    background-image: url('/images/lower.png');
+    background-size: contain;
+    background-position: center;
+    padding: 0;
     margin: 0 5px;
     border: none;
-    border-radius: 8px;
+    border-radius: 0;
     color: transparent;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 0;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: opacity 0.3s;
+    width: auto;
+    height: auto;
 }
 #lower-btn:hover {
-    background-image: url('/images/lower.png') !important;
+    opacity: 0.8;
 }
 #skip-btn {
-    background-image: url('/images/skipcard.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    padding: 12px 16px;
+    background-image: url('/images/skipcard.png');
+    background-size: contain;
+    background-position: center;
+    padding: 0;
     margin: 0 5px;
     border: none;
-    border-radius: 8px;
+    border-radius: 0;
     color: transparent;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 0;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: opacity 0.3s;
+    width: auto;
+    height: auto;
 }
 #skip-btn:hover {
-    background-image: url('/images/skipcard.png') !important;
+    opacity: 0.8;
 }
 #stop-btn {
-    background-image: url('/images/stop.png') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    padding: 12px 16px;
+    background-image: url('/images/stop.png');
+    background-size: contain;
+    background-position: center;
+    padding: 0;
     margin: 0 5px;
     border: none;
-    border-radius: 8px;
+    border-radius: 0;
     color: transparent;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 0;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: opacity 0.3s;
+    width: auto;
+    height: auto;
 }
 #stop-btn:hover {
-    background-image: url('/images/stop.png') !important;
+    opacity: 0.8;
 }
 #payout-container {
     position: relative;
@@ -511,8 +517,8 @@ body {
         font-size: 9px;
     }
     #play-btn, #higher-btn, #lower-btn, #stop-btn, #skip-btn {
-        font-size: 10px;
-        padding: 10px 12px;
+        font-size: 0;
+        padding: 0;
     }
     #payout-container {
         margin-top: 120px;
@@ -541,3 +547,4 @@ body {
         transform-origin: right center;
     }
 }
+```
