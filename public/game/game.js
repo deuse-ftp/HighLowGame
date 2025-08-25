@@ -126,8 +126,6 @@ try {
     }
     function toggleGameOverMessage(show) {
         const messageDiv = document.getElementById('game-over-message');
-        const textP = document.getElementById('game-over-text');
-        textP.textContent = 'Game Over! You lost all session points.';
         messageDiv.style.display = show ? 'block' : 'none';
     }
     document.querySelector('.close-game-over-btn').addEventListener('click', () => {
