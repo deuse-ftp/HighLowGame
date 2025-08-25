@@ -597,10 +597,8 @@ const PrivyConnect = () => {
               fundWallet={fundWallet}
             />
             <button
+              className="logout-btn"
               onClick={logout}
-              style={{ ...buttonStyle, marginTop: '15px' }}
-              onMouseOver={buttonHover}
-              onMouseOut={buttonHoverOut}
             >
               Logout
             </button>
