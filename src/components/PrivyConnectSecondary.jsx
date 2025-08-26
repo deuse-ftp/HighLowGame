@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLogin, usePrivy, useWallets } from '@privy-io/react-auth';
-import { isAddress } from 'viem';
+import { useLogin, usePrivy, useWallets, useCrossAppAccounts } from '@privy-io/react-auth';
+import { isAddress, formatEther } from 'viem';
 import WalletPanel from './WalletPanel';
 import { monadTestnet, contractAddress, contractABI, publicClient, DEV_ADDRESS, BACKEND_URL } from '../config';
 
@@ -8,7 +8,7 @@ const PrivyConnectSecondary = () => {
   const { login } = useLogin({
     onComplete: (user, isNewUser, wasAlreadyAuthenticated, loginMethod) => {
       console.log('✅ Secondary User logged in:', user, 'Method:', loginMethod);
-      window.dispatchEvent(new Event('walletConnected')); // Adicionado para compatibilidade com o jogo
+      window.dispatchEvent(new Event('walletConnected'));
       window.dispatchEvent(new Event('walletConnectedSecondary'));
       window.privyUserSecondary = user;
     },
@@ -23,25 +23,28 @@ const PrivyConnectSecondary = () => {
   });
   const { authenticated, ready, logout, user } = usePrivy();
   const { wallets } = useWallets();
+  const { sendTransaction: sendCrossAppTransaction } = useCrossAppAccounts();
   const [monadWalletAddress, setMonadWalletAddress] = useState('');
   const [username, setUsername] = useState('');
   const [loadingUsername, setLoadingUsername] = useState(false);
   const [usernamesMap, setUsernamesMap] = useState(new Map());
   const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem('cachedLeaderboard') || '[]'));
   const [playerRank, setPlayerRank] = useState(JSON.parse(localStorage.getItem('cachedPlayerRank') || '{"rank": 0, "score": 0}'));
+  const [balance, setBalance] = useState('0.000');
   const [lastLeaderboardUpdate, setLastLeaderboardUpdate] = useState(0);
   const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
+  const [lastTransactionTime, setLastTransactionTime] = useState(0);
 
   // Debounce function to limit transaction calls
   const debounce = (func, wait) => {
     let timeout;
     return (...args) => {
       const now = Date.now();
-      if (now - lastLeaderboardUpdate < wait) {
+      if (now - lastTransactionTime < wait) {
         console.log('ℹ️ Transaction throttled, waiting...');
         return;
       }
-      setLastLeaderboardUpdate(now);
+      setLastTransactionTime(now);
       clearTimeout(timeout);
       timeout = setTimeout(() => func(...args), wait);
     };
@@ -128,6 +131,208 @@ const PrivyConnectSecondary = () => {
       unsubscribeReset();
     };
   }, [ready, authenticated, user]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (monadWalletAddress) {
+        try {
+          const balanceWei = await publicClient.getBalance({ address: monadWalletAddress });
+          const balance = parseFloat(formatEther(balanceWei)).toFixed(3);
+          setBalance(balance);
+        } catch (error) {
+          console.error('❌ Failed to fetch balance:', error);
+        }
+      }
+    };
+    fetchBalance();
+    const balanceInterval = setInterval(fetchBalance, 10000);
+    return () => clearInterval(balanceInterval);
+  }, [monadWalletAddress]);
+
+  useEffect(() => {
+    let transactionQueue = [];
+    let isProcessing = false;
+
+    const isUserCancellationError = (error) => {
+      const lowerMessage = error.message ? error.message.toLowerCase() : '';
+      return (
+        error.code === 4001 ||
+        lowerMessage.includes('reject') ||
+        lowerMessage.includes('cancel') ||
+        lowerMessage.includes('exited_auth_flow') ||
+        lowerMessage.includes('user rejected')
+      );
+    };
+
+    const sendPrizeTransaction = debounce(async (prize, username) => {
+      if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
+        console.error('❌ Invalid wallet address:', monadWalletAddress);
+        return;
+      }
+      const adjustedPrize = Math.floor(prize / 2); // Divide by 2 for Monad Games ID
+      window.dispatchEvent(new CustomEvent('localPrizeConfirmed', { detail: { prize } }));
+      transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
+      if (!isProcessing) {
+        console.log('ℹ️ Starting transaction queue processing...');
+        processQueue();
+      }
+    }, 700);
+
+    const processQueue = async () => {
+      if (isProcessing || transactionQueue.length === 0) {
+        console.log('ℹ️ Queue processing stopped: isProcessing=', isProcessing, 'queueLength=', transactionQueue.length);
+        return;
+      }
+      isProcessing = true;
+      const { prize, username, player } = transactionQueue.shift();
+      console.log('ℹ️ Processing transaction for prize:', prize, 'username:', username, 'player:', player);
+      try {
+        console.log('ℹ️ Sending request to record-prize endpoint');
+        const response = await fetch(`${BACKEND_URL}/record-prize`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ player, prize, username }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Transaction sent successfully:', data.hash);
+          window.dispatchEvent(new CustomEvent('prizeConfirmed', { detail: { prize } }));
+          await fetchLeaderboardAndRank(true);
+        } else {
+          const errorData = await response.json();
+          console.error('❌ Failed to call backend, status:', response.status, 'message:', errorData.error);
+          throw new Error(errorData.error);
+        }
+      } catch (error) {
+        console.error('❌ Failed to call backend:', error);
+        if (!isUserCancellationError(error)) {
+          console.log('ℹ️ Requeuing transaction (not user cancellation)');
+          transactionQueue.unshift({ prize, username, player });
+        } else {
+          console.log('ℹ️ Transaction cancelled by user, not requeuing');
+        }
+      } finally {
+        isProcessing = false;
+        console.log('ℹ️ Queue processing finished, isProcessing:', isProcessing);
+        if (transactionQueue.length > 0) {
+          console.log('ℹ️ Processing next transaction in queue...');
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          processQueue();
+        }
+      }
+    };
+
+    const sendGameAction = debounce(async () => {
+      console.log('ℹ️ Starting sendGameAction, wallet address:', monadWalletAddress);
+      if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
+        console.error('❌ Invalid wallet address:', monadWalletAddress);
+        return;
+      }
+      try {
+        console.log('ℹ️ Sending request to game-action endpoint:', `${BACKEND_URL}/game-action`);
+        const response = await fetch(`${BACKEND_URL}/game-action`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({ player: monadWalletAddress }),
+        });
+        const contentType = response.headers.get('content-type');
+        console.log('ℹ️ Response status:', response.status, 'Content-Type:', contentType);
+        const text = await response.text();
+        console.log('ℹ️ Raw response:', text);
+        if (!response.ok) {
+          console.error('❌ Failed to call backend, status:', response.status, 'response:', text);
+          throw new Error(`Failed to call backend, status: ${response.status}, response: ${text}`);
+        }
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('❌ Response is not JSON:', contentType, 'response:', text);
+          throw new Error('Response is not JSON');
+        }
+        const data = JSON.parse(text);
+        console.log('✅ Game action transaction sent successfully:', data.hash);
+        return data;
+      } catch (error) {
+        console.error('❌ Failed to process game action:', error);
+        throw error;
+      }
+    }, 700);
+
+    window.sendPrizeTransaction = (prize, username) => {
+      sendPrizeTransaction(prize, username);
+    };
+    window.sendGameAction = () => {
+      sendGameAction();
+    };
+
+    const handlePrizeAwarded = (event) => {
+      const prize = event.detail.prize;
+      const eventUsername = event.detail.username || '';
+      const currentUsername = username && username !== 'Unknown' ? username : eventUsername;
+      console.log('ℹ️ Prize event received, prize:', prize, 'event username:', eventUsername, 'current username:', currentUsername);
+      if (typeof prize !== 'number' || prize <= 0) {
+        console.warn('❌ Invalid prize, ignoring transaction:', prize);
+        return;
+      }
+      if (!currentUsername || currentUsername === 'Unknown' || currentUsername === '') {
+        console.warn('❌ Invalid username, ignoring transaction:', currentUsername);
+        return;
+      }
+      console.log('✅ Valid prize and username, proceeding with transaction');
+      window.sendPrizeTransaction(prize, currentUsername);
+    };
+
+    window.addEventListener('prizeAwarded', handlePrizeAwarded);
+
+    return () => {
+      window.removeEventListener('prizeAwarded', handlePrizeAwarded);
+    };
+  }, [authenticated, monadWalletAddress, username]);
+
+  const checkOwner = async () => {
+    try {
+      const owner = await publicClient.readContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: 'owner',
+      });
+      const isOwner = owner.toLowerCase() === DEV_ADDRESS.toLowerCase();
+      console.log('✅ Owner check completed, is owner?', isOwner, 'Owner address:', owner);
+      alert(`Owner: ${isOwner ? 'Yes' : 'No'}, Address: ${owner}`);
+    } catch (error) {
+      console.error('❌ Failed to check owner:', error);
+    }
+  };
+
+  const fundWallet = async () => {
+    if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
+      console.error('❌ Invalid wallet address:', monadWalletAddress);
+      return;
+    }
+    try {
+      console.log('ℹ️ Sending fund wallet request, to:', monadWalletAddress);
+      const response = await fetch(`${BACKEND_URL}/fund-wallet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ to: monadWalletAddress, amount: '1' }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Wallet funded successfully:', data.hash);
+        alert('Wallet funded successfully!');
+      } else {
+        const errorData = await response.json();
+        console.error('❌ Failed to call backend, status:', response.status, 'message:', errorData.error);
+      }
+    } catch (error) {
+      console.error('❌ Failed to fund wallet:', error);
+    }
+  };
 
   const fetchUsername = async (walletAddress) => {
     if (!walletAddress) {
@@ -277,13 +482,6 @@ const PrivyConnectSecondary = () => {
     }
   };
 
-  useEffect(() => {
-    if (ready) {
-      console.log('ℹ️ Initializing leaderboard fetch');
-      fetchLeaderboardAndRank();
-    }
-  }, [ready]);
-
   const buttonStyle = {
     width: '220px',
     padding: '10px 10px',
@@ -413,10 +611,10 @@ const PrivyConnectSecondary = () => {
           <>
             <WalletPanel
               walletAddress={monadWalletAddress}
-              balance={'0.000'} // Balance fetching not implemented for secondary panel
+              balance={balance}
               username={loadingUsername ? 'Loading...' : username}
-              checkOwner={() => alert('Check Owner not available in secondary panel')}
-              fundWallet={() => alert('Fund Wallet not available in secondary panel')}
+              checkOwner={checkOwner}
+              fundWallet={fundWallet}
             />
             <button
               className="logout-btn"

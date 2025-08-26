@@ -14,9 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rootElement = document.createElement('div');
     rootElement.id = 'privy-root';
     rootElement.style.position = 'absolute';
-    rootElement.style.top = '20px';
-    rootElement.style.right = '110px';
-    rootElement.style.zIndex = '2000';
+    rootElement.style.zIndex = '2100';
     document.body.appendChild(rootElement);
     const root = ReactDOM.createRoot(rootElement);
     root.render(
