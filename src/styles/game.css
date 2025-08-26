@@ -715,7 +715,7 @@ body {
     #play-btn {
         position: relative;
         left: 1px;
-        top: -45px;
+        top: -15px;
         width: 70px;
         height: 70px;
         margin: 0 5px;
@@ -725,7 +725,7 @@ body {
     #higher-btn {
         position: relative;
         left: 10px;
-        top: -45px;
+        top: -15px;
         width: 95px;
         height: 30px;
         margin: 0 5px 0 10px;
@@ -735,7 +735,7 @@ body {
     #lower-btn {
         position: relative;
         left: 15px;
-        top: -45px;
+        top: -15px;
         width: 95px;
         height: 30px;
         margin: 0 5px 0 10px;
@@ -745,7 +745,7 @@ body {
     #skip-btn {
         position: relative;
         left: 15px;
-        top: -45px;
+        top: -15px;
         width: 95px;
         height: 30px;
         margin: 0 5px;
@@ -755,7 +755,7 @@ body {
     #stop-btn {
         position: relative;
         left: 20px;
-        top: -45px;
+        top: -15px;
         width: 70px;
         height: 70px;
         margin: 0 5px;
