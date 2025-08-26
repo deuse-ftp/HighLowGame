@@ -704,8 +704,8 @@ body {
         position: relative;
         left: auto;
         top: auto;
-        width: 80px; /* Tamanho reduzido para mobile */
-        height: 40px; /* Tamanho reduzido para mobile */
+        width: 110px; /* Tamanho reduzido para mobile */
+        height: 60px; /* Tamanho reduzido para mobile */
         margin: 0 5px;
         font-size: 0;
         display: inline-block;
@@ -714,8 +714,8 @@ body {
         position: relative;
         left: auto;
         top: auto;
-        width: 80px; /* Tamanho reduzido para mobile */
-        height: 40px; /* Tamanho reduzido para mobile */
+        width: 95px; /* Tamanho reduzido para mobile */
+        height: 55px; /* Tamanho reduzido para mobile */
         margin: 0 5px 0 10px;
         font-size: 0;
         display: none;
@@ -724,8 +724,8 @@ body {
         position: relative;
         left: auto;
         top: auto;
-        width: 80px; /* Tamanho reduzido para mobile */
-        height: 40px; /* Tamanho reduzido para mobile */
+        width: 95px; /* Tamanho reduzido para mobile */
+        height: 55px; /* Tamanho reduzido para mobile */
         margin: 0 5px 0 10px;
         font-size: 0;
         display: none;
@@ -744,8 +744,8 @@ body {
         position: relative;
         left: auto;
         top: auto;
-        width: 80px; /* Tamanho reduzido para mobile */
-        height: 40px; /* Tamanho reduzido para mobile */
+        width: 90px; /* Tamanho reduzido para mobile */
+        height: 60px; /* Tamanho reduzido para mobile */
         margin: 0 5px;
         font-size: 0;
         display: none;
