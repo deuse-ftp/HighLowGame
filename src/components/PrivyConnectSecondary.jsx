@@ -52,24 +52,25 @@ const PrivyConnectSecondary = () => {
 
   useEffect(() => {
     if (!ready) {
-      console.log('ℹ️ Secondary Privy not ready yet, waiting for initialization...');
+      console.log('ℹ️ Privy not ready yet, waiting for initialization...');
       return;
     }
     if (authenticated && user && user.linkedAccounts.length > 0) {
-      console.log('ℹ️ Secondary Checking linked accounts:', user.linkedAccounts);
+      console.log('ℹ️ Checking linked accounts:', user.linkedAccounts);
       const crossAppAccount = user.linkedAccounts.find(
         (account) => account.type === 'cross_app' && account.providerApp.id === 'cmd8euall0037le0my79qpz42'
       );
       if (crossAppAccount && crossAppAccount.embeddedWallets.length > 0) {
         const address = crossAppAccount.embeddedWallets[0].address;
-        console.log('✅ Secondary Embedded wallet address found:', address);
+        console.log('✅ Embedded wallet address found:', address);
         setMonadWalletAddress(address);
         fetchUsername(address).then((newUsername) => {
-          console.log('✅ Secondary Username fetched:', newUsername);
+          console.log('✅ Username fetched:', newUsername);
           setUsername(newUsername);
+          window.privyUsername = newUsername; // Store username in window object
         });
       } else {
-        console.error('❌ Secondary Monad Games ID account not found');
+        console.error('❌ Monad Games ID account not found');
       }
     }
 
@@ -337,11 +338,13 @@ const PrivyConnectSecondary = () => {
   const fetchUsername = async (walletAddress) => {
     if (!walletAddress) {
       console.warn('❌ Secondary No wallet address provided for fetchUsername');
+      window.privyUsername = 'Unknown'; // Set default in case of no address
       return 'Unknown';
     }
     if (usernamesMap.has(walletAddress)) {
       const cachedUsername = usernamesMap.get(walletAddress);
       console.log('✅ Secondary Using cached username:', cachedUsername);
+      window.privyUsername = cachedUsername; // Update window object with cached username
       return cachedUsername;
     }
     setLoadingUsername(true);
@@ -355,17 +358,20 @@ const PrivyConnectSecondary = () => {
         const newUsername = data.user.username;
         setUsernamesMap(prev => new Map(prev).set(walletAddress, newUsername));
         setUsername(newUsername);
+        window.privyUsername = newUsername; // Store username in window object
         console.log('✅ Secondary Username fetched successfully:', newUsername);
         return newUsername;
       } else {
         console.warn('❌ Secondary Username not found for:', walletAddress);
         setUsernamesMap(prev => new Map(prev).set(walletAddress, 'Unknown'));
         setUsername('Unknown');
+        window.privyUsername = 'Unknown'; // Update window object
         return 'Unknown';
       }
     } catch (error) {
       console.error('❌ Secondary Failed to fetch username:', error);
       setUsername('Unknown');
+      window.privyUsername = 'Unknown'; // Update window object
       return 'Unknown';
     } finally {
       setLoadingUsername(false);

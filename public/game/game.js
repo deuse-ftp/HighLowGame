@@ -35,6 +35,12 @@ try {
             toggleConnectMessage(true);
             return;
         }
+        // Check if username exists and is not 'Unknown' or empty
+        const username = window.privyUsername || 'Unknown';
+        if (username === 'Unknown' || !username) {
+            toggleNoUsernameMessage(true);
+            return;
+        }
         isRoundStarted = true;
         sessionMultiplier = 1.0;
         sessionPoints = 0;
@@ -113,9 +119,17 @@ try {
         const messageDiv = document.getElementById('game-over-message');
         messageDiv.style.display = show ? 'block' : 'none';
     }
-    document.querySelector('.close-game-over-btn').addEventListener('click', () => {
-        toggleGameOverMessage(false);
-    });
+    function toggleNoUsernameMessage(show) {
+        const messageDiv = document.getElementById('no-username-message');
+        const messageP = document.getElementById('no-username-message').querySelector('p');
+        messageP.textContent = 'You need register your Monad Username to play this game';
+        messageDiv.style.display = show ? 'flex' : 'none';
+        if (show) {
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 7000);
+        }
+    }
     function makeGuess(guess) {
         if (window.sendGameAction) {
             window.sendGameAction();
@@ -213,7 +227,7 @@ try {
         const messageP = document.getElementById('connect-wallet-message').querySelector('p');
         let message = '';
         if (!isWalletConnected) {
-            message = 'Connect your wallet';
+            message = 'Connect your Monad ID Wallet';
         }
         messageP.textContent = message;
         messageDiv.style.display = show && message ? 'flex' : 'none';
@@ -248,7 +262,7 @@ try {
                         tempMultiplier *= payout;
                         points = Math.max(0, Math.round(100 * (tempMultiplier - 1)));
                     }
-                    li.textContent = `Card: ${entry.card}, Choice: ${entry.guess}, Result: ${entry.result}, Points: ${points}`;
+                    li.textContent = `Card: ${entry.card}, Choice: ${entry.guess}, Result: ${entry.result}`;
                     list.appendChild(li);
                 });
             } else {
@@ -295,6 +309,7 @@ try {
         toggleSegmentCountsMessage(false);
         toggleLeaderboardMessage(false);
         toggleGameOverMessage(false);
+        toggleNoUsernameMessage(false);
     }
     document.getElementById('total-points-btn').addEventListener('click', () => {
         closeAllPanels();
@@ -320,6 +335,12 @@ try {
     });
     document.getElementById('higher-btn').addEventListener('click', () => makeGuess('higher'));
     document.getElementById('lower-btn').addEventListener('click', () => makeGuess('lower'));
+    document.querySelector('.close-game-over-btn').addEventListener('click', () => {
+        toggleGameOverMessage(false);
+    });
+    document.querySelector('.close-no-username-btn').addEventListener('click', () => {
+        toggleNoUsernameMessage(false);
+    });
     document.addEventListener('keydown', (e) => {
         if (e.key === ' ') {
             if (!isSpinning && !isRoundStarted) {
