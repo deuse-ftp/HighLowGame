@@ -702,9 +702,9 @@ body {
     }
     #play-btn {
         position: relative;
-        left: auto;
-        top: auto;
-        width: 110px; /* Tamanho reduzido para mobile */
+        left: 1px;
+        top: -15px;
+        width: 60px; /* Tamanho reduzido para mobile */
         height: 60px; /* Tamanho reduzido para mobile */
         margin: 0 5px;
         font-size: 0;
@@ -713,7 +713,7 @@ body {
     #higher-btn {
         position: relative;
         left: auto;
-        top: auto;
+        top: -15px;
         width: 95px; /* Tamanho reduzido para mobile */
         height: 55px; /* Tamanho reduzido para mobile */
         margin: 0 5px 0 10px;
@@ -723,7 +723,7 @@ body {
     #lower-btn {
         position: relative;
         left: auto;
-        top: auto;
+        top: -15px;
         width: 95px; /* Tamanho reduzido para mobile */
         height: 55px; /* Tamanho reduzido para mobile */
         margin: 0 5px 0 10px;
@@ -732,10 +732,10 @@ body {
     }
     #skip-btn {
         position: relative;
-        left: auto;
-        top: auto;
-        width: 80px; /* Tamanho reduzido para mobile */
-        height: 40px; /* Tamanho reduzido para mobile */
+        left: 15px;
+        top: -15px;
+        width: 90px; /* Tamanho reduzido para mobile */
+        height: 90px; /* Tamanho reduzido para mobile */
         margin: 0 5px;
         font-size: 0;
         display: inline-block;
@@ -743,7 +743,7 @@ body {
     #stop-btn {
         position: relative;
         left: auto;
-        top: auto;
+        top: -15px;
         width: 90px; /* Tamanho reduzido para mobile */
         height: 60px; /* Tamanho reduzido para mobile */
         margin: 0 5px;
