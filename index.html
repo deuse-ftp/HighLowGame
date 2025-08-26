@@ -65,9 +65,6 @@
         <button id="play-game-btn">Play Game</button>
     </div>
     <div id="game-content">
-        <h1>Monad Testnet</h1>
-        <p>Click PLAY or press Space to play and STOP to save points.</p>
-        <p>View your game history and points below.</p>
         <div id="hilo-container">
             <video id="card-board-video" autoplay loop muted playsinline>
                 <source src="/images/bg-motion.mp4" type="video/mp4">
@@ -135,11 +132,11 @@
             const welcomeScreen = document.getElementById('welcome-screen');
             const gameContent = document.getElementById('game-content');
             const playGameBtn = document.getElementById('play-game-btn');
-
-        playGameBtn.addEventListener('click', () => {
-            welcomeScreen.style.display = 'none';
-            gameContent.style.display = 'block';
+            playGameBtn.addEventListener('click', () => {
+                welcomeScreen.style.display = 'none';
+                gameContent.style.display = 'block';
+            });
         });
-    });
-</script></body>
+    </script>
+</body>
 </html>

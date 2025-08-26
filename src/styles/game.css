@@ -6,6 +6,9 @@ body {
     margin: 0;
     padding: 0;
 }
+#game-content {
+    padding-top: 140px; /* Compensação para as frases removidas */
+}
 #hilo-container {
     position: relative;
     margin: 2em auto;
@@ -517,8 +520,8 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 210px;
-    height: 75px;
+    width: 130px;
+    height: 60px;
     margin: 0 5px;
     border: none;
     border-radius: 0;
@@ -642,6 +645,9 @@ body {
     opacity: 0.8;
 }
 @media (max-width: 600px) {
+    #game-content {
+        padding-top: 130px; /* Compensação para as frases removidas em mobile */
+    }
     h1 {
         font-size: 24px;
     }

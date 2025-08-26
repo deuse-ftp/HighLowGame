@@ -3,6 +3,7 @@ import { DEV_ADDRESS } from '../config';
 
 const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet }) => {
   const [showBalance, setShowBalance] = useState(false);
+
   const buttonStyle = {
     width: '120px',
     padding: '10px',
@@ -18,6 +19,7 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
     textAlign: 'center',
     overflow: 'hidden',
   };
+
   const darkButtonStyle = {
     width: '100%',
     padding: '10px',
@@ -34,25 +36,30 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
     justifyContent: 'space-between',
     alignItems: 'center',
   };
+
   const buttonHover = (e) => {
     e.target.style.background = 'linear-gradient(to bottom, #5B4FC0, #836EF9)';
   };
+
   const buttonHoverOut = (e) => {
     e.target.style.background = 'linear-gradient(to bottom, #836EF9, #5B4FC0)';
   };
+
   const darkButtonHover = (e) => {
     e.target.style.background = '#3a3a3a';
   };
+
   const darkButtonHoverOut = (e) => {
     e.target.style.background = '#2a2a2a';
   };
+
   return (
     <div style={{ marginTop: '5px' }}>
       <style>
         {`
           @media (max-width: 600px) {
             .username-section {
-              margin-top: -10px !important; /* Subir Username 10px no mobile */
+              margin-top: -5px !important; /* Subir Username 5px no mobile */
             }
             .wallet-panel-connected {
               margin-top: 8px !important; /* Subir Connected 10px no mobile */
@@ -60,7 +67,7 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
           }
           @media (min-width: 601px) {
             .username-section {
-              margin-top: -15px !important; /* Subir Username 15px no PC */
+              margin-top: 0px !important; /* Subir Username 10px no PC */
             }
             .wallet-panel-connected {
               margin-top: 15px !important; /* Subir Connected 15px no PC */
