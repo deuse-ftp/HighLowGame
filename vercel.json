@@ -47,8 +47,7 @@
     },
     {
       "src": "/:path*",
-      "dest": "https://highlowgame.vercel.app/:path*",
-      "permanent": true
+      "dest": "https://highlowgame.vercel.app/:path*"
     }
   ]
 }
