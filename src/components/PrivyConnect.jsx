@@ -316,7 +316,7 @@ const PrivyConnect = () => {
         ...entry,
         score: entry.score / 2
       }))));
-      setLeaderboard(ledgerboardData.map(entry => ({
+      setLeaderboard(leaderboardData.map(entry => ({
         ...entry,
         score: entry.score / 2
       })));
@@ -363,7 +363,7 @@ const PrivyConnect = () => {
       }
     }, 700);
     const processQueue = async () => {
-      if (isProcessing || transactionQueue.length === 0) {
+      if (isProcessing || transactionQueue.length == 0) {
         console.log('ℹ️ Processamento da fila parado: isProcessing=', isProcessing, 'queueLength=', transactionQueue.length);
         return;
       }
@@ -550,7 +550,7 @@ const PrivyConnect = () => {
     flexDirection: 'column',
     gap: '10px',
     width: !ready || !authenticated ? '220px' : '220px',
-    height: !ready || !authenticated ? 'auto' : '160px',
+    height: !ready || !authenticated ? 'auto' : '155px',
     top: '30px',
     left: '-750px',
     zIndex: 2000,
@@ -574,7 +574,7 @@ const PrivyConnect = () => {
           @media (max-width: 600px) {
             .privy-panel {
               position: fixed !important;
-              top: 50px !important;
+              top: 25px !important;
               bottom: auto !important;
               left: 50% !important;
               transform: translateX(-50%) !important;
@@ -596,18 +596,21 @@ const PrivyConnect = () => {
             .drag-handle {
               cursor: grab !important;
             }
+            .drag-handle.authenticated {
+              display: none !important; /* Oculta Wallet Panel no mobile quando autenticado */
+            }
             .username-section {
-              margin-top: 22px !important; /* Subir Username no mobile */
+              margin-top: 22px !important;
             }
             .wallet-panel-connected {
-              margin-top: -5px !important; /* Subir Connected no mobile */
+              margin-top: -5px !important;
             }
           }
           @media (min-width: 601px) {
             .privy-panel {
               position: absolute !important;
-              top: 30px !important;
-              left: -850px !important;
+              top: 155px !important;
+              left: -1310px !important;
             }
             .monad-button {
               position: absolute !important;
@@ -615,17 +618,17 @@ const PrivyConnect = () => {
               left: 15px !important;
             }
             .username-section {
-              margin-top: -8px !important; /* Subir Username no PC */
+              margin-top: -8px !important;
             }
             .wallet-panel-connected {
-              margin-top: -8px !important; /* Subir Connected no PC */
+              margin-top: -8px !important;
             }
           }
         `}
       </style>
       <Draggable handle=".drag-handle">
         <div className={`privy-panel ${!authenticated ? 'not-authenticated' : ''}`} style={panelStyle}>
-          <div className="drag-handle" style={dragHandleStyle}>
+          <div className={`drag-handle ${authenticated ? 'authenticated' : ''}`} style={dragHandleStyle}>
             {authenticated ? 'Wallet Panel' : 'Connect Wallet'}
           </div>
           {!ready ? (

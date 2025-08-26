@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DEV_ADDRESS } from '../config';
 
-// WalletPanel component
 const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet }) => {
   const [showBalance, setShowBalance] = useState(false);
   const buttonStyle = {
@@ -48,7 +47,27 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
     e.target.style.background = '#2a2a2a';
   };
   return (
-    <div style={{ marginTop: '10px' }}>
+    <div style={{ marginTop: '5px' }}>
+      <style>
+        {`
+          @media (max-width: 600px) {
+            .username-section {
+              margin-top: -10px !important; /* Subir Username 10px no mobile */
+            }
+            .wallet-panel-connected {
+              margin-top: 8px !important; /* Subir Connected 10px no mobile */
+            }
+          }
+          @media (min-width: 601px) {
+            .username-section {
+              margin-top: -15px !important; /* Subir Username 15px no PC */
+            }
+            .wallet-panel-connected {
+              margin-top: 15px !important; /* Subir Connected 15px no PC */
+            }
+          }
+        `}
+      </style>
       <div className="username-section">
         <strong>
           Username:{' '}
@@ -67,6 +86,7 @@ const WalletPanel = ({ walletAddress, balance, username, checkOwner, fundWallet 
         </strong>
       </div>
       <button
+        className="wallet-panel-connected"
         style={darkButtonStyle}
         onMouseOver={darkButtonHover}
         onMouseOut={darkButtonHoverOut}

@@ -81,8 +81,8 @@ body {
 }
 #probabilities {
     position: absolute;
-    top: 30%;
-    left: 50%;
+    top: 20%;
+    left: 45%;
     width: 5%;
     height: auto;
     display: none;
@@ -92,9 +92,13 @@ body {
     color: white;
     line-height: 1.2;
     z-index: 20;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-image: url('/images/stats.png'); /* Usar stats.png como fundo */
+    background-size: cover;
+    background-position: center;
+    border: 0px solid #836EF9;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 5px;
-    border-radius: 8px;
     text-align: center;
 }
 #connect-wallet-message {
@@ -386,8 +390,8 @@ body {
 }
 #log-container {
     position: absolute !important;
-    top: 263px !important;
-    left: calc(50% - min(400px, 90vw) / 2 - 290px) !important;
+    top: 415px !important;
+    left: calc(50% - min(300px, 90vw) / 2 - 290px) !important;
     transform: translateX(-50px) !important; /* Adicionado para mover 50px pra esquerda */
     width: 234px !important;
     height: 234px !important;
@@ -513,8 +517,8 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    width: 140px;
-    height: 65px;
+    width: 210px;
+    height: 75px;
     margin: 0 5px;
     border: none;
     border-radius: 0;
@@ -765,6 +769,12 @@ body {
         height: auto;
         padding: 5px;
         font-size: 11px;
+        background-image: url('/images/stats.png'); /* Usar stats.png como fundo */
+        background-size: cover;
+        background-position: center;
+        border: 1px solid #836EF9;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     .card {
         transition: opacity 0.4s ease, transform 0.4s ease;
