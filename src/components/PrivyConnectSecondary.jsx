@@ -8,6 +8,7 @@ const PrivyConnectSecondary = () => {
   const { login } = useLogin({
     onComplete: (user, isNewUser, wasAlreadyAuthenticated, loginMethod) => {
       console.log('✅ Secondary User logged in:', user, 'Method:', loginMethod);
+      window.dispatchEvent(new Event('walletConnected')); // Adicionado para compatibilidade com o jogo
       window.dispatchEvent(new Event('walletConnectedSecondary'));
       window.privyUserSecondary = user;
     },
