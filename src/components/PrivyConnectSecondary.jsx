@@ -26,6 +26,25 @@ const PrivyConnectSecondary = () => {
   const [username, setUsername] = useState('');
   const [loadingUsername, setLoadingUsername] = useState(false);
   const [usernamesMap, setUsernamesMap] = useState(new Map());
+  const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem('cachedLeaderboard') || '[]'));
+  const [playerRank, setPlayerRank] = useState(JSON.parse(localStorage.getItem('cachedPlayerRank') || '{"rank": 0, "score": 0}'));
+  const [lastLeaderboardUpdate, setLastLeaderboardUpdate] = useState(0);
+  const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
+
+  // Debounce function to limit transaction calls
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      const now = Date.now();
+      if (now - lastLeaderboardUpdate < wait) {
+        console.log('ℹ️ Transaction throttled, waiting...');
+        return;
+      }
+      setLastLeaderboardUpdate(now);
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
 
   useEffect(() => {
     if (!ready) {
@@ -49,6 +68,64 @@ const PrivyConnectSecondary = () => {
         console.error('❌ Secondary Monad Games ID account not found');
       }
     }
+
+    // Fetch leaderboard even if not authenticated
+    fetchLeaderboardAndRank();
+
+    // Set up event listeners for LeaderboardUpdated and LeaderboardReset
+    const handleLeaderboardUpdated = debounce((logs) => {
+      const now = Date.now();
+      if (now - lastLeaderboardUpdate < 1000) {
+        console.log('ℹ️ Skipping duplicate LeaderboardUpdated event');
+        return;
+      }
+      setLastLeaderboardUpdate(now);
+      console.log('✅ LeaderboardUpdated event received:', logs);
+      fetchLeaderboardAndRank(true);
+    }, 1000);
+
+    const handleLeaderboardReset = debounce((logs) => {
+      const now = Date.now();
+      if (now - lastLeaderboardReset < 1000) {
+        console.log('ℹ️ Skipping duplicate LeaderboardReset event');
+        return;
+      }
+      setLastLeaderboardReset(now);
+      console.log('✅ LeaderboardReset event received:', logs);
+      localStorage.removeItem('cachedLeaderboard');
+      localStorage.removeItem('cachedPlayerRank');
+      setLeaderboard([]);
+      setPlayerRank({ rank: 0, score: 0 });
+      fetchLeaderboardAndRank(true);
+    }, 1000);
+
+    const unsubscribeUpdated = publicClient.watchEvent({
+      address: contractAddress,
+      abi: contractABI,
+      eventName: 'LeaderboardUpdated',
+      pollingInterval: 15000,
+      onLogs: handleLeaderboardUpdated,
+      onError: (error) => {
+        console.error('❌ Failed to listen for LeaderboardUpdated:', error);
+      },
+    });
+
+    const unsubscribeReset = publicClient.watchEvent({
+      address: contractAddress,
+      abi: contractABI,
+      eventName: 'LeaderboardReset',
+      pollingInterval: 15000,
+      onLogs: handleLeaderboardReset,
+      onError: (error) => {
+        console.error('❌ Failed to listen for LeaderboardReset:', error);
+      },
+    });
+
+    // Cleanup event listeners on unmount
+    return () => {
+      unsubscribeUpdated();
+      unsubscribeReset();
+    };
   }, [ready, authenticated, user]);
 
   const fetchUsername = async (walletAddress) => {
@@ -88,6 +165,123 @@ const PrivyConnectSecondary = () => {
       setLoadingUsername(false);
     }
   };
+
+  const fetchLeaderboardAndRank = async (forceUpdate = false) => {
+    let leaderboardData = [];
+    try {
+      if (!forceUpdate && leaderboard.length > 0) {
+        console.log('ℹ️ Using cached leaderboard:', leaderboard);
+        // Multiply scores by 2 for local leaderboard display
+        const adjustedLeaderboard = leaderboard.map(entry => ({
+          ...entry,
+          score: Number(entry.score) * 2
+        }));
+        window.dispatchEvent(
+          new CustomEvent('leaderboardUpdated', {
+            detail: {
+              leaderboard: adjustedLeaderboard,
+              playerRank: {
+                ...playerRank,
+                score: Number(playerRank.score) * 2
+              }
+            },
+          })
+        );
+        if (monadWalletAddress && isAddress(monadWalletAddress)) {
+          console.log('ℹ️ Updating player rank:', monadWalletAddress);
+          const [rank, score] = await publicClient.readContract({
+            address: contractAddress,
+            abi: contractABI,
+            functionName: 'getPlayerRank',
+            args: [monadWalletAddress],
+          });
+          const updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 };
+          console.log('✅ Player rank fetched successfully:', updatedPlayerRank);
+          setPlayerRank({ rank: Number(rank), score: Number(score) });
+          localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
+          window.dispatchEvent(
+            new CustomEvent('leaderboardUpdated', {
+              detail: {
+                leaderboard: adjustedLeaderboard,
+                playerRank: updatedPlayerRank
+              },
+            })
+          );
+        }
+        return;
+      }
+      const rawLeaderboard = await publicClient.readContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: 'getLeaderboard',
+      });
+      leaderboardData = await Promise.all(rawLeaderboard.map(async (entry) => {
+        let userName = entry.username;
+        if (!userName || userName === '') {
+          userName = await fetchUsername(entry.player);
+        }
+        return {
+          player: entry.player,
+          username: userName || 'Unknown',
+          score: Number(entry.score) * 2, // Multiply score by 2 for local display
+        };
+      }));
+      leaderboardData.sort((a, b) => b.score - a.score);
+      let updatedPlayerRank = { rank: 0, score: 0 };
+      if (monadWalletAddress && isAddress(monadWalletAddress)) {
+        try {
+          const [rank, score] = await publicClient.readContract({
+            address: contractAddress,
+            abi: contractABI,
+            functionName: 'getPlayerRank',
+            args: [monadWalletAddress],
+          });
+          updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 }; // Multiply score by 2
+          console.log('✅ Player rank fetched successfully:', updatedPlayerRank);
+          setPlayerRank({ rank: Number(rank), score: Number(score) });
+          localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
+        } catch (error) {
+          console.error('❌ Failed to fetch player rank for', monadWalletAddress, ':', error);
+          const playerEntry = leaderboardData.find(entry => entry.player.toLowerCase() === monadWalletAddress.toLowerCase());
+          if (playerEntry) {
+            updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score) };
+            console.log('ℹ️ Using leaderboard data for player rank:', updatedPlayerRank);
+            setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }); // Store original score
+            localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }));
+          } else {
+            console.warn('⚠️ Player not found in leaderboard, using default rank:', updatedPlayerRank);
+          }
+        }
+      }
+      window.dispatchEvent(
+        new CustomEvent('leaderboardUpdated', {
+          detail: { leaderboard: leaderboardData, playerRank: updatedPlayerRank },
+        })
+      );
+      console.log('✅ Leaderboard fetched successfully:', leaderboardData);
+      localStorage.setItem('cachedLeaderboard', JSON.stringify(leaderboardData.map(entry => ({
+        ...entry,
+        score: entry.score / 2 // Store original score in cache
+      }))));
+      setLeaderboard(leaderboardData.map(entry => ({
+        ...entry,
+        score: entry.score / 2 // Store original score in state
+      })));
+    } catch (error) {
+      console.error('❌ Failed to fetch leaderboard:', error);
+      if (error.message.includes('429')) {
+        console.log('ℹ️ Rate limit error (429), retrying in 5 seconds...');
+        setTimeout(() => fetchLeaderboardAndRank(true), 5000);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (ready) {
+      console.log('ℹ️ Initializing leaderboard fetch');
+      fetchLeaderboardAndRank();
+    }
+  }, [ready]);
 
   const buttonStyle = {
     width: '220px',
@@ -178,7 +372,7 @@ const PrivyConnectSecondary = () => {
               width: ${!ready || !authenticated ? '180px' : '230px'};
               height: ${!ready || !authenticated ? '40px' : '130px'};
               padding: 10px;
-              transform: translate(calc(-50% - 30px), calc(-50% - 285px));
+              transform: translate(calc(-50% - 30px), calc(-50% - 330px));
               gap: 8px;
             }
             .privy-secondary-panel.not-authenticated {

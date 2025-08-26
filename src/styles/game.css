@@ -279,7 +279,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: none;
-    z-index: 100;
+    z-index: 2200;
     padding: 10px;
 }
 .leaderboard-content {
@@ -646,7 +646,7 @@ body {
 }
 @media (max-width: 600px) {
     #game-content {
-        padding-top: 130px; /* Compensação para as frases removidas em mobile */
+        padding-top: 175px; /* Compensação para as frases removidas em mobile */
     }
     h1 {
         font-size: 24px;
