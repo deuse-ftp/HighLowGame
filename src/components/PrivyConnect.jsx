@@ -5,7 +5,6 @@ import { isAddress, formatEther } from 'viem';
 import WalletPanel from './WalletPanel';
 import { monadTestnet, contractAddress, contractABI, publicClient, DEV_ADDRESS, BACKEND_URL } from '../config';
 
-// PrivyConnect component
 const PrivyConnect = () => {
   const { login } = useLogin({
     onComplete: (user, isNewUser, wasAlreadyAuthenticated, loginMethod) => {
@@ -36,7 +35,6 @@ const PrivyConnect = () => {
   const [lastLeaderboardReset, setLastLeaderboardReset] = useState(0);
   const [lastTransactionTime, setLastTransactionTime] = useState(0);
 
-  // Debounce function to limit transaction calls
   const debounce = (func, wait) => {
     let timeout;
     return (...args) => {
@@ -74,9 +72,7 @@ const PrivyConnect = () => {
         console.error('❌ Monad Games ID account not found');
       }
     }
-    // Fetch leaderboard even if not authenticated
     fetchLeaderboardAndRank();
-    // Set up event listeners for LeaderboardUpdated and LeaderboardReset
     const handleLeaderboardUpdated = debounce((logs) => {
       const now = Date.now();
       if (now - lastLeaderboardUpdate < 1000) {
@@ -121,7 +117,6 @@ const PrivyConnect = () => {
         console.error('❌ Failed to listen for LeaderboardReset:', error);
       },
     });
-    // Cleanup event listeners on unmount
     return () => {
       unsubscribeUpdated();
       unsubscribeReset();
@@ -230,18 +225,17 @@ const PrivyConnect = () => {
     try {
       if (!forceUpdate && leaderboard.length > 0) {
         console.log('ℹ️ Usando leaderboard em cache:', leaderboard);
-        // Multiply scores by 2 for local leaderboard display
         const adjustedLeaderboard = leaderboard.map(entry => ({
           ...entry,
           score: Number(entry.score) * 2
         }));
         window.dispatchEvent(
           new CustomEvent('leaderboardUpdated', {
-            detail: { 
-              leaderboard: adjustedLeaderboard, 
-              playerRank: { 
-                ...playerRank, 
-                score: Number(playerRank.score) * 2 
+            detail: {
+              leaderboard: adjustedLeaderboard,
+              playerRank: {
+                ...playerRank,
+                score: Number(playerRank.score) * 2
               }
             },
           })
@@ -260,9 +254,9 @@ const PrivyConnect = () => {
           localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
           window.dispatchEvent(
             new CustomEvent('leaderboardUpdated', {
-              detail: { 
-                leaderboard: adjustedLeaderboard, 
-                playerRank: updatedPlayerRank 
+              detail: {
+                leaderboard: adjustedLeaderboard,
+                playerRank: updatedPlayerRank
               },
             })
           );
@@ -282,7 +276,7 @@ const PrivyConnect = () => {
         return {
           player: entry.player,
           username: userName || 'Unknown',
-          score: Number(entry.score) * 2, // Multiply score by 2 for local display
+          score: Number(entry.score) * 2,
         };
       }));
       leaderboardData.sort((a, b) => b.score - a.score);
@@ -295,7 +289,7 @@ const PrivyConnect = () => {
             functionName: 'getPlayerRank',
             args: [monadWalletAddress],
           });
-          updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 }; // Multiply score by 2
+          updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 };
           console.log('✅ Rank do jogador obtido com sucesso:', updatedPlayerRank);
           setPlayerRank({ rank: Number(rank), score: Number(score) });
           localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
@@ -305,7 +299,7 @@ const PrivyConnect = () => {
           if (playerEntry) {
             updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score) };
             console.log('ℹ️ Usando dados do leaderboard para rank do jogador:', updatedPlayerRank);
-            setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }); // Store original score
+            setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 });
             localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }));
           } else {
             console.warn('⚠️ Jogador não encontrado no leaderboard, usando rank padrão:', updatedPlayerRank);
@@ -320,11 +314,11 @@ const PrivyConnect = () => {
       console.log('✅ Leaderboard obtido com sucesso:', leaderboardData);
       localStorage.setItem('cachedLeaderboard', JSON.stringify(leaderboardData.map(entry => ({
         ...entry,
-        score: entry.score / 2 // Store original score in cache
+        score: entry.score / 2
       }))));
-      setLeaderboard(leaderboardData.map(entry => ({
+      setLeaderboard(ledgerboardData.map(entry => ({
         ...entry,
-        score: entry.score / 2 // Store original score in state
+        score: entry.score / 2
       })));
     } catch (error) {
       console.error('❌ Falha ao obter leaderboard:', error);
@@ -355,14 +349,12 @@ const PrivyConnect = () => {
         lowerMessage.includes('user rejected')
       );
     };
-
     const sendPrizeTransaction = debounce(async (prize, username) => {
       if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
         console.error('❌ Endereço de carteira inválido:', monadWalletAddress);
         return;
       }
-      const adjustedPrize = Math.floor(prize / 2); // Divide por 2 para Monad Games ID
-      // Dispara evento para o jogo local com o prêmio completo
+      const adjustedPrize = Math.floor(prize / 2);
       window.dispatchEvent(new CustomEvent('localPrizeConfirmed', { detail: { prize } }));
       transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
       if (!isProcessing) {
@@ -370,7 +362,6 @@ const PrivyConnect = () => {
         processQueue();
       }
     }, 700);
-
     const processQueue = async () => {
       if (isProcessing || transactionQueue.length === 0) {
         console.log('ℹ️ Processamento da fila parado: isProcessing=', isProcessing, 'queueLength=', transactionQueue.length);
@@ -416,7 +407,6 @@ const PrivyConnect = () => {
         }
       }
     };
-
     const sendGameAction = debounce(async () => {
       console.log('ℹ️ Iniciando sendGameAction, endereço da carteira:', monadWalletAddress);
       if (!monadWalletAddress || !isAddress(monadWalletAddress)) {
@@ -453,14 +443,12 @@ const PrivyConnect = () => {
         throw error;
       }
     }, 700);
-
     window.sendPrizeTransaction = (prize, username) => {
       sendPrizeTransaction(prize, username);
     };
     window.sendGameAction = () => {
       sendGameAction();
     };
-
     const handlePrizeAwarded = (event) => {
       const prize = event.detail.prize;
       const eventUsername = event.detail.username || '';
@@ -477,7 +465,6 @@ const PrivyConnect = () => {
       console.log('✅ Prêmio e username válidos, prosseguindo com transação');
       window.sendPrizeTransaction(prize, currentUsername);
     };
-
     window.addEventListener('prizeAwarded', handlePrizeAwarded);
     return () => {
       window.removeEventListener('prizeAwarded', handlePrizeAwarded);
@@ -499,6 +486,7 @@ const PrivyConnect = () => {
     textAlign: 'center',
     overflow: 'hidden',
   };
+
   const monadButtonStyle = {
     width: '220px',
     padding: '10px 10px',
@@ -518,6 +506,7 @@ const PrivyConnect = () => {
     left: '15px',
     zIndex: 2100,
   };
+
   const darkButtonStyle = {
     width: '100%',
     padding: '10px',
@@ -534,18 +523,23 @@ const PrivyConnect = () => {
     justifyContent: 'space-between',
     alignItems: 'center',
   };
+
   const buttonHover = (e) => {
     e.target.style.background = 'linear-gradient(to bottom, #5B4FC0, #836EF9)';
   };
+
   const buttonHoverOut = (e) => {
     e.target.style.background = 'linear-gradient(to bottom, #836EF9, #5B4FC0)';
   };
+
   const darkButtonHover = (e) => {
     e.target.style.background = '#3a3a3a';
   };
+
   const darkButtonHoverOut = (e) => {
     e.target.style.background = '#2a2a2a';
   };
+
   const panelStyle = {
     background: '#1e1a2a',
     border: '1px solid #836EF9',
@@ -555,11 +549,14 @@ const PrivyConnect = () => {
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
-    width: !ready || !authenticated ? '220px' : '250px',
-    height: !ready || !authenticated ? '100px' : '230px',
+    width: !ready || !authenticated ? '220px' : '220px',
+    height: !ready || !authenticated ? 'auto' : '160px',
+    top: '30px',
+    left: '-750px',
     zIndex: 2000,
-    position: 'relative',
+    position: 'absolute',
   };
+
   const dragHandleStyle = {
     cursor: 'grab',
     userSelect: 'none',
@@ -571,41 +568,98 @@ const PrivyConnect = () => {
   };
 
   return (
-    <Draggable handle=".drag-handle">
-      <div style={panelStyle}>
-        <div className="drag-handle" style={dragHandleStyle}>
-          {authenticated ? 'Wallet Panel' : 'Connect Wallet'}
-        </div>
-        {!ready ? (
-          <p>Loading...</p>
-        ) : !authenticated ? (
-          <button
-            onClick={login}
-            style={monadButtonStyle}
-            onMouseOver={buttonHover}
-            onMouseOut={buttonHoverOut}
-          >
-            Login with Monad Games ID
-          </button>
-        ) : (
-          <>
-            <WalletPanel
-              walletAddress={monadWalletAddress}
-              balance={balance}
-              username={loadingUsername ? 'Loading...' : username}
-              checkOwner={checkOwner}
-              fundWallet={fundWallet}
-            />
+    <>
+      <style>
+        {`
+          @media (max-width: 600px) {
+            .privy-panel {
+              position: fixed !important;
+              top: 50px !important;
+              bottom: auto !important;
+              left: 50% !important;
+              transform: translateX(-50%) !important;
+              width: 90% !important;
+              max-width: 300px !important;
+              height: auto !important;
+              z-index: 3100 !important;
+            }
+            .privy-panel.not-authenticated {
+              top: 50px !important;
+              width: 61% !important;
+              max-width: 250px !important;
+            }
+            .monad-button {
+              position: absolute !important;
+              top: 10px !important;
+              left: 15px !important;
+            }
+            .drag-handle {
+              cursor: grab !important;
+            }
+            .username-section {
+              margin-top: 22px !important; /* Subir Username no mobile */
+            }
+            .wallet-panel-connected {
+              margin-top: -5px !important; /* Subir Connected no mobile */
+            }
+          }
+          @media (min-width: 601px) {
+            .privy-panel {
+              position: absolute !important;
+              top: 30px !important;
+              left: -850px !important;
+            }
+            .monad-button {
+              position: absolute !important;
+              top: 10px !important;
+              left: 15px !important;
+            }
+            .username-section {
+              margin-top: -8px !important; /* Subir Username no PC */
+            }
+            .wallet-panel-connected {
+              margin-top: -8px !important; /* Subir Connected no PC */
+            }
+          }
+        `}
+      </style>
+      <Draggable handle=".drag-handle">
+        <div className={`privy-panel ${!authenticated ? 'not-authenticated' : ''}`} style={panelStyle}>
+          <div className="drag-handle" style={dragHandleStyle}>
+            {authenticated ? 'Wallet Panel' : 'Connect Wallet'}
+          </div>
+          {!ready ? (
+            <p>Loading...</p>
+          ) : !authenticated ? (
             <button
-              className="logout-btn"
-              onClick={logout}
+              onClick={login}
+              className="monad-button"
+              style={monadButtonStyle}
+              onMouseOver={buttonHover}
+              onMouseOut={buttonHoverOut}
             >
-              Logout
+              Login with Monad Games ID
             </button>
-          </>
-        )}
-      </div>
-    </Draggable>
+          ) : (
+            <>
+              <WalletPanel
+                walletAddress={monadWalletAddress}
+                balance={balance}
+                username={loadingUsername ? 'Loading...' : username}
+                checkOwner={checkOwner}
+                fundWallet={fundWallet}
+              />
+              <button
+                className="logout-btn"
+                onClick={logout}
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      </Draggable>
+    </>
   );
 };
 

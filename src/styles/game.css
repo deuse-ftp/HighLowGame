@@ -387,7 +387,8 @@ body {
 #log-container {
     position: absolute !important;
     top: 263px !important;
-    left: calc(50% - min(400px, 90vw) / 2 - 290px);
+    left: calc(50% - min(400px, 90vw) / 2 - 290px) !important;
+    transform: translateX(-50px) !important; /* Adicionado para mover 50px pra esquerda */
     width: 234px !important;
     height: 234px !important;
     overflow-y: auto !important;
@@ -647,6 +648,7 @@ body {
         position: relative !important;
         top: 130px !important;
         left: auto !important;
+        transform: none !important; /* Remove transform em mobile */
         margin: 20px auto !important;
         width: min(276px, 91.52vw) !important;
         height: 235px !important;
@@ -693,9 +695,9 @@ body {
         top: calc(min(550px, 135vw) + 2em + 20px);
         left: 50%;
         transform: translateX(-50%);
-        width: min(320px, 100vw); /* Reduzido para evitar overflow */
+        width: min(320px, 100vw);
         display: flex;
-        flex-wrap: wrap; /* Permite quebra de linha se necessário */
+        flex-wrap: wrap;
         justify-content: center;
         align-items: center;
         z-index: 10;
@@ -704,8 +706,8 @@ body {
         position: relative;
         left: 1px;
         top: -45px;
-        width: 70px; /* Tamanho reduzido para mobile */
-        height: 70px; /* Tamanho reduzido para mobile */
+        width: 70px;
+        height: 70px;
         margin: 0 5px;
         font-size: 0;
         display: inline-block;
@@ -714,8 +716,8 @@ body {
         position: relative;
         left: 10px;
         top: -45px;
-        width: 95px; /* Tamanho reduzido para mobile */
-        height: 30px; /* Tamanho reduzido para mobile */
+        width: 95px;
+        height: 30px;
         margin: 0 5px 0 10px;
         font-size: 0;
         display: none;
@@ -724,8 +726,8 @@ body {
         position: relative;
         left: 15px;
         top: -45px;
-        width: 95px; /* Tamanho reduzido para mobile */
-        height: 30px; /* Tamanho reduzido para mobile */
+        width: 95px;
+        height: 30px;
         margin: 0 5px 0 10px;
         font-size: 0;
         display: none;
@@ -734,8 +736,8 @@ body {
         position: relative;
         left: 15px;
         top: -45px;
-        width: 95px; /* Tamanho reduzido para mobile */
-        height: 30px; /* Tamanho reduzido para mobile */
+        width: 95px;
+        height: 30px;
         margin: 0 5px;
         font-size: 0;
         display: inline-block;
@@ -744,8 +746,8 @@ body {
         position: relative;
         left: 20px;
         top: -45px;
-        width: 70px; /* Tamanho reduzido para mobile */
-        height: 70px; /* Tamanho reduzido para mobile */
+        width: 70px;
+        height: 70px;
         margin: 0 5px;
         font-size: 0;
         display: none;
