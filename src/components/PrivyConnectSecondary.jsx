@@ -372,7 +372,7 @@ const PrivyConnectSecondary = () => {
               width: ${!ready || !authenticated ? '180px' : '230px'};
               height: ${!ready || !authenticated ? '40px' : '130px'};
               padding: 10px;
-              transform: translate(calc(-50% - 0px), calc(-50% - 295px));
+              transform: translate(calc(-50% - 0px), calc(-50% - 280px));
               gap: 8px;
             }
             .privy-secondary-panel.not-authenticated {

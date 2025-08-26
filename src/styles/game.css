@@ -646,7 +646,7 @@ body {
 }
 @media (max-width: 600px) {
     #game-content {
-        padding-top: 175px; /* Compensação para as frases removidas em mobile */
+        padding-top: 155px; /* Compensação para as frases removidas em mobile */
     }
     h1 {
         font-size: 24px;
@@ -715,7 +715,7 @@ body {
     #play-btn {
         position: relative;
         left: 1px;
-        top: -15px;
+        top: -25px;
         width: 70px;
         height: 70px;
         margin: 0 5px;
@@ -725,7 +725,7 @@ body {
     #higher-btn {
         position: relative;
         left: 10px;
-        top: -15px;
+        top: -25px;
         width: 95px;
         height: 30px;
         margin: 0 5px 0 10px;
@@ -735,7 +735,7 @@ body {
     #lower-btn {
         position: relative;
         left: 15px;
-        top: -15px;
+        top: -25px;
         width: 95px;
         height: 30px;
         margin: 0 5px 0 10px;
@@ -745,7 +745,7 @@ body {
     #skip-btn {
         position: relative;
         left: 15px;
-        top: -15px;
+        top: -25px;
         width: 95px;
         height: 30px;
         margin: 0 5px;
@@ -755,7 +755,7 @@ body {
     #stop-btn {
         position: relative;
         left: 20px;
-        top: -15px;
+        top: -25px;
         width: 70px;
         height: 70px;
         margin: 0 5px;
