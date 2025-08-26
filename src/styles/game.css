@@ -722,7 +722,7 @@ body {
     }
     #lower-btn {
         position: relative;
-        left: 5px;
+        left: 15px;
         top: -45px;
         width: 95px; /* Tamanho reduzido para mobile */
         height: 65px; /* Tamanho reduzido para mobile */
@@ -742,10 +742,10 @@ body {
     }
     #stop-btn {
         position: relative;
-        left: 15px;
+        left: 20px;
         top: -45px;
-        width: 90px; /* Tamanho reduzido para mobile */
-        height: 60px; /* Tamanho reduzido para mobile */
+        width: 70px; /* Tamanho reduzido para mobile */
+        height: 70px; /* Tamanho reduzido para mobile */
         margin: 0 5px;
         font-size: 0;
         display: none;
