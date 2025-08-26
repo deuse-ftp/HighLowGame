@@ -712,8 +712,8 @@ body {
     }
     #higher-btn {
         position: relative;
-        left: auto;
-        top: -65px;
+        left: 10px;
+        top: -45px;
         width: 95px; /* Tamanho reduzido para mobile */
         height: 55px; /* Tamanho reduzido para mobile */
         margin: 0 5px 0 10px;
@@ -722,10 +722,10 @@ body {
     }
     #lower-btn {
         position: relative;
-        left: auto;
-        top: -65px;
+        left: 5px;
+        top: -45px;
         width: 95px; /* Tamanho reduzido para mobile */
-        height: 55px; /* Tamanho reduzido para mobile */
+        height: 65px; /* Tamanho reduzido para mobile */
         margin: 0 5px 0 10px;
         font-size: 0;
         display: none;
@@ -742,8 +742,8 @@ body {
     }
     #stop-btn {
         position: relative;
-        left: auto;
-        top: -65px;
+        left: 15px;
+        top: -45px;
         width: 90px; /* Tamanho reduzido para mobile */
         height: 60px; /* Tamanho reduzido para mobile */
         margin: 0 5px;
