@@ -532,11 +532,11 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    position: absolute; /* Independente do fluxo do payout-container */
-    left: 20px; /* Posição inicial */
+    position: absolute;
+    left: 20px;
     top: 0;
-    width: 180px; /* Tamanho aumentado */
-    height: 100px; /* Tamanho aumentado */
+    width: 180px;
+    height: 100px;
     border: none;
     border-radius: 0;
     color: transparent;
@@ -555,10 +555,10 @@ body {
     background-repeat: no-repeat;
     background-color: transparent;
     position: absolute;
-    left: 45px; /* Ajustado para evitar sobreposição */
+    left: 220px;
     top: 0;
-    width: 180px; /* Tamanho aumentado */
-    height: 70px; /* Tamanho aumentado */
+    width: 180px;
+    height: 70px;
     border: none;
     border-radius: 0;
     color: transparent;
@@ -577,10 +577,10 @@ body {
     background-repeat: no-repeat;
     background-color: transparent;
     position: absolute;
-    left: 160px; /* Ajustado para evitar sobreposição */
+    left: 420px;
     top: 0;
-    width: 180px; /* Tamanho aumentado */
-    height: 70px; /* Tamanho aumentado */
+    width: 180px;
+    height: 70px;
     border: none;
     border-radius: 0;
     color: transparent;
@@ -598,11 +598,11 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
-    position: absolute; /* Independente do fluxo do payout-container */
-    left: 200px; /* Posição inicial */
+    position: absolute;
+    left: 620px;
     top: 0;
-    width: 150px; /* Tamanho aumentado */
-    height: 60px; /* Tamanho aumentado */
+    width: 150px;
+    height: 60px;
     border: none;
     border-radius: 0;
     color: transparent;
@@ -621,10 +621,10 @@ body {
     background-repeat: no-repeat;
     background-color: transparent;
     position: absolute;
-    left: 260px; /* Ajustado para evitar sobreposição */
+    left: 820px;
     top: 0;
-    width: 180px; /* Tamanho aumentado */
-    height: 70px; /* Tamanho aumentado */
+    width: 180px;
+    height: 70px;
     border: none;
     border-radius: 0;
     color: transparent;
@@ -688,30 +688,67 @@ body {
         height: 52px;
         font-size: 0;
     }
-    #play-btn, #higher-btn, #lower-btn, #stop-btn, #skip-btn {
-        width: 100px;
-        height: 50px;
-        font-size: 0;
-    }
-    #higher-btn, #lower-btn, #stop-btn {
-        display: none;
-    }
-    #higher-btn, #lower-btn {
-        margin: 0 5px 0 10px;
-    }
-    #play-btn, #skip-btn {
-        display: inline-block;
-    }
     #payout-container {
         position: absolute;
         top: calc(min(550px, 135vw) + 2em + 20px);
         left: 50%;
         transform: translateX(-50%);
-        width: min(360px, 110vw);
+        width: min(320px, 100vw); /* Reduzido para evitar overflow */
         display: flex;
+        flex-wrap: wrap; /* Permite quebra de linha se necessário */
         justify-content: center;
         align-items: center;
         z-index: 10;
+    }
+    #play-btn {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 80px; /* Tamanho reduzido para mobile */
+        height: 40px; /* Tamanho reduzido para mobile */
+        margin: 0 5px;
+        font-size: 0;
+        display: inline-block;
+    }
+    #higher-btn {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 80px; /* Tamanho reduzido para mobile */
+        height: 40px; /* Tamanho reduzido para mobile */
+        margin: 0 5px 0 10px;
+        font-size: 0;
+        display: none;
+    }
+    #lower-btn {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 80px; /* Tamanho reduzido para mobile */
+        height: 40px; /* Tamanho reduzido para mobile */
+        margin: 0 5px 0 10px;
+        font-size: 0;
+        display: none;
+    }
+    #skip-btn {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 80px; /* Tamanho reduzido para mobile */
+        height: 40px; /* Tamanho reduzido para mobile */
+        margin: 0 5px;
+        font-size: 0;
+        display: inline-block;
+    }
+    #stop-btn {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: 80px; /* Tamanho reduzido para mobile */
+        height: 40px; /* Tamanho reduzido para mobile */
+        margin: 0 5px;
+        font-size: 0;
+        display: none;
     }
     .points-message-content p {
         font-size: 16px;
