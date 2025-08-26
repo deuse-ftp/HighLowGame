@@ -44,10 +44,6 @@
     {
       "src": "/(.*)",
       "dest": "/index.html"
-    },
-    {
-      "src": "/:path*",
-      "dest": "https://highlowgame.vercel.app/:path*"
     }
   ]
 }
