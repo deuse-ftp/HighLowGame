@@ -25,6 +25,12 @@
             object-fit: contain;
             margin-bottom: 20px;
         }
+        #button-container {
+            display: flex;
+            flex-direction: column; /* Empilha os botões verticalmente */
+            align-items: center; /* Centraliza os botões horizontalmente */
+            gap: 20px; /* Espaço entre os botões */
+        }
         #play-game-btn {
             background-image: url('/images/play-game.png');
             background-size: contain;
@@ -43,6 +49,62 @@
         }
         #play-game-btn:hover {
             opacity: 0.8;
+        }
+        #how-to-play-btn {
+            background-image: url('/images/howtoplay1.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: transparent;
+            width: 150px; /* Mesmo tamanho do play-game-btn */
+            height: 50px; /* Mesmo tamanho do play-game-btn */
+            border: none;
+            border-radius: 0;
+            color: transparent;
+            font-size: 0;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        #how-to-play-btn:hover {
+            opacity: 0.8;
+        }
+        #how-to-play-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 4000;
+        }
+        #how-to-play-panel .how-to-play-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #how-to-play-panel img {
+            max-width: 80vw;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        #how-to-play-panel .close-how-to-play-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #836EF9;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        #how-to-play-panel .close-how-to-play-btn:hover {
+            background: #5B4FC0;
         }
         #game-content {
             display: none;
@@ -67,7 +129,7 @@
             color: white;
             position: relative;
             min-width: 200px;
-            min-height: 100px; /* Aumenta a altura do painel */
+            min-height: 100px;
         }
         #no-username-message p {
             margin: 0;
@@ -93,10 +155,18 @@
             #welcome-image {
                 width: min(90vw, 400px);
             }
-            #play-game-btn {
+            #play-game-btn, #how-to-play-btn {
                 width: 120px;
                 height: 40px;
                 font-size: 0;
+            }
+            #how-to-play-panel img {
+                max-width: 90vw;
+                max-height: 70vh;
+            }
+            #how-to-play-panel .close-how-to-play-btn {
+                padding: 3px 8px;
+                font-size: 12px;
             }
             #no-username-message p {
                 font-size: 14px;
@@ -106,7 +176,7 @@
                 font-size: 10px;
             }
             #no-username-message .message-content {
-                min-height: 80px; /* Altura um pouco menor para dispositivos móveis */
+                min-height: 80px;
             }
         }
     </style>
@@ -114,7 +184,16 @@
 <body>
     <div id="welcome-screen">
         <img id="welcome-image" src="/images/welcome.png" alt="Welcome to HiLo Monad">
-        <button id="play-game-btn">Play Game</button>
+        <div id="button-container">
+            <button id="play-game-btn">Play Game</button>
+            <button id="how-to-play-btn">How to Play</button>
+        </div>
+    </div>
+    <div id="how-to-play-panel" style="display: none;">
+        <div class="how-to-play-content">
+            <img src="/images/panelhowtoplay.png" alt="How to Play">
+            <button class="close-how-to-play-btn">X</button>
+        </div>
     </div>
     <div id="game-content">
         <div id="hilo-container">
@@ -185,14 +264,25 @@
     <script src="/game/game.js"></script>
     <script type="module" src="/src/app.jsx"></script>
     <script>
-        // Script para controlar a tela inicial
         document.addEventListener('DOMContentLoaded', () => {
             const welcomeScreen = document.getElementById('welcome-screen');
             const gameContent = document.getElementById('game-content');
             const playGameBtn = document.getElementById('play-game-btn');
+            const howToPlayBtn = document.getElementById('how-to-play-btn');
+            const howToPlayPanel = document.getElementById('how-to-play-panel');
+            const closeHowToPlayBtn = document.querySelector('.close-how-to-play-btn');
+
             playGameBtn.addEventListener('click', () => {
                 welcomeScreen.style.display = 'none';
                 gameContent.style.display = 'block';
+            });
+
+            howToPlayBtn.addEventListener('click', () => {
+                howToPlayPanel.style.display = 'flex';
+            });
+
+            closeHowToPlayBtn.addEventListener('click', () => {
+                howToPlayPanel.style.display = 'none';
             });
         });
     </script>
