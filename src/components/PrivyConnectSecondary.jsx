@@ -382,10 +382,9 @@ const PrivyConnectSecondary = () => {
     try {
       if (!forceUpdate && leaderboard.length > 0) {
         console.log('ℹ️ Using cached leaderboard:', leaderboard);
-        // Multiply scores by 2 for local leaderboard display
         const adjustedLeaderboard = leaderboard.map(entry => ({
           ...entry,
-          score: Number(entry.score) * 2
+          score: Number(entry.score)
         }));
         window.dispatchEvent(
           new CustomEvent('leaderboardUpdated', {
@@ -393,7 +392,7 @@ const PrivyConnectSecondary = () => {
               leaderboard: adjustedLeaderboard,
               playerRank: {
                 ...playerRank,
-                score: Number(playerRank.score) * 2
+                score: Number(playerRank.score)
               }
             },
           })
@@ -406,7 +405,7 @@ const PrivyConnectSecondary = () => {
             functionName: 'getPlayerRank',
             args: [monadWalletAddress],
           });
-          const updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 };
+          const updatedPlayerRank = { rank: Number(rank), score: Number(score) };
           console.log('✅ Player rank fetched successfully:', updatedPlayerRank);
           setPlayerRank({ rank: Number(rank), score: Number(score) });
           localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
@@ -434,7 +433,7 @@ const PrivyConnectSecondary = () => {
         return {
           player: entry.player,
           username: userName || 'Unknown',
-          score: Number(entry.score) * 2, // Multiply score by 2 for local display
+          score: Number(entry.score),
         };
       }));
       leaderboardData.sort((a, b) => b.score - a.score);
@@ -447,7 +446,7 @@ const PrivyConnectSecondary = () => {
             functionName: 'getPlayerRank',
             args: [monadWalletAddress],
           });
-          updatedPlayerRank = { rank: Number(rank), score: Number(score) * 2 }; // Multiply score by 2
+          updatedPlayerRank = { rank: Number(rank), score: Number(score) };
           console.log('✅ Player rank fetched successfully:', updatedPlayerRank);
           setPlayerRank({ rank: Number(rank), score: Number(score) });
           localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: Number(rank), score: Number(score) }));
@@ -457,8 +456,8 @@ const PrivyConnectSecondary = () => {
           if (playerEntry) {
             updatedPlayerRank = { rank: leaderboardData.indexOf(playerEntry) + 1, score: Number(playerEntry.score) };
             console.log('ℹ️ Using leaderboard data for player rank:', updatedPlayerRank);
-            setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }); // Store original score
-            localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: updatedPlayerRank.rank, score: playerEntry.score / 2 }));
+            setPlayerRank({ rank: updatedPlayerRank.rank, score: playerEntry.score });
+            localStorage.setItem('cachedPlayerRank', JSON.stringify({ rank: updatedPlayerRank.rank, score: playerEntry.score }));
           } else {
             console.warn('⚠️ Player not found in leaderboard, using default rank:', updatedPlayerRank);
           }
@@ -472,11 +471,11 @@ const PrivyConnectSecondary = () => {
       console.log('✅ Leaderboard fetched successfully:', leaderboardData);
       localStorage.setItem('cachedLeaderboard', JSON.stringify(leaderboardData.map(entry => ({
         ...entry,
-        score: entry.score / 2 // Store original score in cache
+        score: entry.score
       }))));
       setLeaderboard(leaderboardData.map(entry => ({
         ...entry,
-        score: entry.score / 2 // Store original score in state
+        score: entry.score
       })));
     } catch (error) {
       console.error('❌ Failed to fetch leaderboard:', error);
