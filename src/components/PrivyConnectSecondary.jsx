@@ -170,9 +170,8 @@ const PrivyConnectSecondary = () => {
         console.error('❌ Invalid wallet address:', monadWalletAddress);
         return;
       }
-      const adjustedPrize = Math.floor(prize / 2); // Divide by 2 for Monad Games ID
       window.dispatchEvent(new CustomEvent('localPrizeConfirmed', { detail: { prize } }));
-      transactionQueue.push({ prize: adjustedPrize, username, player: monadWalletAddress });
+      transactionQueue.push({ prize, username, player: monadWalletAddress });
       if (!isProcessing) {
         console.log('ℹ️ Starting transaction queue processing...');
         processQueue();
